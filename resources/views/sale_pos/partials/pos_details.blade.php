@@ -175,7 +175,7 @@
 								<button type="button" class="btn bg-navy  btn-block btn-flat btn-lg no-print @if($pos_settings['disable_pay_checkout'] != 0) hide @endif pos-express-btn" id="pos-finalize" title="@lang('lang_v1.tooltip_checkout_multi_pay')">
 								<div class="text-center">
 									<i class="fa fa-check" aria-hidden="true"></i>
-    								<b>@lang('lang_v1.checkout_multi_pay')</b>
+    								<b>@lang('lang_v1.checkout_multi_pay')awda</b>
     							</div>
 								</button>
 							</div>

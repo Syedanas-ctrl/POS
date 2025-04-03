@@ -98,7 +98,7 @@ Route::middleware(['setData'])->group(function () {
 });
 
 //TODO: Move this 
-Route::get('/zatca/onboarding', [App\Http\Controllers\ZatcaController::class, 'index'])->name('zatca.index');
+// Route::get('/zatca/onboarding', [App\Http\Controllers\ZatcaController::class, 'index'])->name('zatca.index');
 Route::post('/zatca/save-integration', [App\Http\Controllers\ZatcaController::class, 'saveIntegration'])->name('zatca.save-integration');
 
 //Routes for authenticated users only
@@ -306,6 +306,13 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('settings', [LocationSettingsController::class, 'index'])->name('settings');
         Route::post('settings', [LocationSettingsController::class, 'updateSettings'])->name('settings_update');
     });
+
+    // Zatca business location routes
+    Route::get('/business-location/zatca/{id}', [App\Http\Controllers\BusinessLocationController::class, 'editZatcaConfig'])->name('business-location.zatca');
+    Route::put('/business-location/zatca/{id}', [App\Http\Controllers\BusinessLocationController::class, 'updateZatcaConfig'])->name('business-location.zatca.update');
+
+
+    Route::get('/zatca/onboarding', [App\Http\Controllers\ZatcaController::class, 'index'])->name('zatca.index');
 
     //Business Locations...
     Route::post('business-location/check-location-id', [BusinessLocationController::class, 'checkLocationId']);

@@ -407,5 +407,90 @@ class Transaction extends Model
         return $sales_orders;
     }
 
+
+    /**
+     * Checks if the transaction has a ZATCA XML
+     *
+     * @return bool
+     */
+    public function hasZatcaXml()
+    {
+        return !empty($this->zatca_xml);
+    }
+
+    /**
+     * Generate and store ZATCA XML for this transaction
+     * 
+     * @return array
+     */
+    public function generateZatcaXml()
+    {
+        // Only generate for final sell transactions
+        if ($this->type != 'sell' || $this->status != 'final') {
+            return [
+                'success' => false,
+                'message' => 'ZATCA XML can only be generated for final sell transactions'
+            ];
+        }
+
+        try {
+            // Get the certificate
+            $certificate = \App\ZatcaCertificate::getActiveCertificate($this->location_id);
+            if (!$certificate) {
+                return [
+                    'success' => false,
+                    'message' => 'No active ZATCA certificate found for this business'
+                ];
+            }
+
+            // Generate XML
+            $zatca = new \App\Services\Zatca\Zatca();
+            $result = $zatca->generateInvoiceXml($this);
+
+            // Sign the XML
+            $zatca = new \App\Services\Zatca\Zatca();
+            $signedInvoice = $zatca->getInvoiceSigned(
+                $result['xml'],
+                $certificate->csid_certificate,
+                $certificate->csid_secret,
+                $certificate->private
+            );
+
+            // Report the invoice
+            // $report = $zatca->report([
+            //     'portal_mode' => 'sandbox',
+            //     'certificate' => base64_encode($certificate->csid_production_certificate),
+            //     'secret' => $certificate->csid_production_secret,
+            //     'signedXmlInvoice' => $signedInvoice['xml'],
+            //     'invoiceHash' => $signedInvoice['hash'],
+            //     'uuid' => $result['uuid']
+            // ]);
+            // dd($report);
+            
+            // Store the results
+            $this->zatca_xml = $signedInvoice['xml'];
+            $this->zatca_qr_code = $signedInvoice['qrCode'];
+            $this->zatca_hash = $signedInvoice['hash'];
+            $this->zatca_uuid = $result['uuid'];
+            // $this->zatca_status = $report['status'];
+            // $this->zatca_error = $report['error'];
+            // $this->zatca_warning = $report['warning'];
+
+            $this->save();
+            
+            return [
+                'success' => true,
+                'xml' => $signedInvoice['xml'],
+                'qr_code' => $signedInvoice['qrCode'],
+                'hash' => $signedInvoice['hash']
+            ];
+        } catch (\Exception $e) {
+            \Log::error('ZATCA XML generation failed: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Failed to generate ZATCA XML: ' . $e->getMessage()
+            ];
+        }
+    }
    
 }

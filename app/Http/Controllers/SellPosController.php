@@ -63,6 +63,8 @@ use Stripe\Charge;
 use Stripe\Stripe;
 use Yajra\DataTables\Facades\DataTables;
 use App\Events\SellCreatedOrModified;
+use App\Services\Zatca\Zatca;
+use App\ZatcaCertificate;
 
 class SellPosController extends Controller
 {
@@ -83,6 +85,8 @@ class SellPosController extends Controller
 
     protected $notificationUtil;
 
+    protected $zatca;
+
     /**
      * Constructor
      *
@@ -96,7 +100,8 @@ class SellPosController extends Controller
         TransactionUtil $transactionUtil,
         CashRegisterUtil $cashRegisterUtil,
         ModuleUtil $moduleUtil,
-        NotificationUtil $notificationUtil
+        NotificationUtil $notificationUtil,
+        Zatca $zatca
     ) {
         $this->contactUtil = $contactUtil;
         $this->productUtil = $productUtil;
@@ -105,7 +110,7 @@ class SellPosController extends Controller
         $this->cashRegisterUtil = $cashRegisterUtil;
         $this->moduleUtil = $moduleUtil;
         $this->notificationUtil = $notificationUtil;
-
+        $this->zatca = $zatca;
         $this->dummyPaymentLine = ['method' => 'cash', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
             'is_return' => 0, 'transaction_no' => ''];
     }
@@ -481,6 +486,16 @@ class SellPosController extends Controller
                 $input['document'] = $this->transactionUtil->uploadFile($request, 'sell_document', 'documents');
 
                 $transaction = $this->transactionUtil->createSellTransaction($business_id, $input, $invoice_total, $user_id);
+
+                // $invoice = $this->zatca->generateInvoiceXml($transaction);
+                // $xml = $invoice['xml'];
+
+                // $zatcaCertificate = ZatcaCertificate::where('business_location_id', $input['location_id'])->first();
+                // $certificate = $zatcaCertificate->csid_certificate;
+                // $secret = $zatcaCertificate->csid_secret;
+                // $privateKey = $zatcaCertificate->private;
+                // $signedInvoice = $this->zatca->getInvoiceSigned($xml, $certificate, $secret, $privateKey);
+                // dd($signedInvoice);
 
                 //Upload Shipping documents
                 Media::uploadMedia($business_id, $transaction, $request, 'shipping_documents', false, 'shipping_document');
@@ -2526,6 +2541,13 @@ class SellPosController extends Controller
             DB::beginTransaction();
 
             $transaction = $this->transactionUtil->createSellTransaction($business_id, $order_data, $invoice_total, $user_id, false);
+            $invoice = $this->zatca->generateInvoiceXml($transaction);
+            $xml = $invoice['xml'];
+            $zatcaCertificate = ZatcaCertificate::where('business_location_id', $location_id)->first();
+            $certificate = $zatcaCertificate->csid_certificate;
+            $secret = $zatcaCertificate->csid_secret;
+            $privateKey = $zatcaCertificate->private;
+            $signedInvoice = $this->zatca->getInvoiceSigned($xml, $certificate, $secret, $privateKey);
 
             //Create sell lines
             $this->transactionUtil->createOrUpdateSellLines($transaction, $order_data['products'], $order_data['location_id'], false, null, [], false);

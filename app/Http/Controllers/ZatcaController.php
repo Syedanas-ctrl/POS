@@ -6,6 +6,7 @@ use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use App\Services\Zatca\Zatca;
 
 class ZatcaController extends Controller
 {
@@ -13,6 +14,7 @@ class ZatcaController extends Controller
      * All Utils instance.
      */
     protected $moduleUtil;
+    protected $zatca;
 
     /**
      * Constructor
@@ -20,6 +22,7 @@ class ZatcaController extends Controller
     public function __construct(ModuleUtil $moduleUtil)
     {
         $this->moduleUtil = $moduleUtil;
+        $this->zatca = new Zatca();
     }
 
     /**
@@ -33,10 +36,7 @@ class ZatcaController extends Controller
         //     abort(403, 'Unauthorized action.');
         // }
 
-        // $business_id = request()->session()->get('user.business_id');
-        // $zatca_settings = DB::table('zatca_settings')
-        //                     ->where('business_id', $business_id)
-        //                     ->first();
+        $business_id = request()->session()->get('user.business_id');
 
         return view('zatca.onboarding');
                 // ->with(compact('zatca_settings'));
@@ -50,13 +50,14 @@ class ZatcaController extends Controller
      */
     public function saveIntegration(Request $request)
     {
-        if (!auth()->user()->can('zatca.settings')) {
-            abort(403, 'Unauthorized action.');
-        }
+        // dd($request->all());
+        // if (!auth()->user()->can('zatca.settings')) {
+        //     abort(403, 'Unauthorized action.');
+        // }
 
         try {
             $input = $request->except('_token');
-            
+
             // Validate key inputs
             $request->validate([
                 'portal_mode' => 'required',
@@ -71,70 +72,30 @@ class ZatcaController extends Controller
             ]);
 
             // Save settings to database
-            $business_id = request()->session()->get('user.business_id');
-            
-            // Check if settings already exist for this business
-            $zatca_settings = DB::table('zatca_settings')
-                                ->where('business_id', $business_id)
-                                ->first();
-            
-            if ($zatca_settings) {
-                // Update existing settings
-                DB::table('zatca_settings')
-                    ->where('business_id', $business_id)
-                    ->update([
-                        'portal_mode' => $request->portal_mode,
-                        'otp' => $request->otp,
-                        'email' => $request->email,
-                        'common_name' => $request->common_name,
-                        'country_code' => $request->country_code,
-                        'organization_unit_name' => $request->organization_unit_name,
-                        'organization_name' => $request->organization_name,
-                        'egs_serial_number' => $request->egs_serial_number,
-                        'vat_name' => $request->vat_name,
-                        'invoice_type' => $request->invoice_type,
-                        'vat_number' => $request->vat_number,
-                        'registered_address' => $request->registered_address,
-                        'business_category' => $request->business_category,
-                        'crn' => $request->crn,
-                        'street_name' => $request->street_name,
-                        'building_number' => $request->building_number,
-                        'plot_identification' => $request->plot_identification,
-                        'sub_division_name' => $request->sub_division_name,
-                        'city_name' => $request->city_name,
-                        'postal_number' => $request->postal_number,
-                        'country_name' => $request->country_name,
-                        'updated_at' => now()
-                    ]);
-            } else {
-                // Insert new settings
-                DB::table('zatca_settings')->insert([
-                    'business_id' => $business_id,
-                    'portal_mode' => $request->portal_mode,
-                    'otp' => $request->otp,
-                    'email' => $request->email,
-                    'common_name' => $request->common_name,
-                    'country_code' => $request->country_code,
-                    'organization_unit_name' => $request->organization_unit_name,
-                    'organization_name' => $request->organization_name,
-                    'egs_serial_number' => $request->egs_serial_number,
-                    'vat_name' => $request->vat_name,
-                    'invoice_type' => $request->invoice_type,
-                    'vat_number' => $request->vat_number,
-                    'registered_address' => $request->registered_address,
-                    'business_category' => $request->business_category,
-                    'crn' => $request->crn,
-                    'street_name' => $request->street_name,
-                    'building_number' => $request->building_number,
-                    'plot_identification' => $request->plot_identification,
-                    'sub_division_name' => $request->sub_division_name,
-                    'city_name' => $request->city_name,
-                    'postal_number' => $request->postal_number,
-                    'country_name' => $request->country_name,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
-            }
+            $csr = $this->zatca->getCsr($input);
+            $csid = $this->zatca->getCSID([
+                'portal_mode' => $input['portal_mode'],
+                'otp' => $input['otp'],
+                'csr' => $csr['certificate']
+            ]);
+            $prodCSID = $this->zatca->getProdCSID([
+                'portal_mode' => $input['portal_mode'],
+                'otp' => $input['otp'],
+                'certificate' => base64_encode($csid['certificate']),
+                'secret' => $csid['secret'],
+                'requestId' => $csid['requestId']
+            ]);
+            DB::table('zatca_certificates')->insert([
+                'business_location_id' => $input['business_location_id'],
+                'csr' => $csr['certificate'],
+                'private' => $csr['privateKey'],
+                'csid_certificate' => $csid['certificate'],
+                'csid_secret' => $csid['secret'],
+                'csid_request_id' => $csid['requestId'],
+                'csid_production_certificate' => $prodCSID['certificate'],
+                'csid_production_secret' => $prodCSID['secret'],
+                'csid_production_request_id' => $prodCSID['requestId']
+            ]);
             
             // Log the action for audit purposes
             activity()

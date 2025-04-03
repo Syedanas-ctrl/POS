@@ -60,6 +60,18 @@
               'placeholder' => __('messages.please_select')]); !!}
           </div>
         </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+              {!! Form::label('business_category', __( 'lang_v1.business_category' ) . ':') !!}
+              {!! Form::text('business_category', $location->business_category, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.business_category')]); !!}
+          </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                {!! Form::label('egs_serial_number', __( 'lang_v1.egs_serial_number' ) . ':') !!}
+                {!! Form::text('egs_serial_number', $location->egs_serial_number, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.egs_serial_number')]); !!}
+            </div>
+        </div>
       </div>
     </div>
 

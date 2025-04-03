@@ -18,6 +18,8 @@ return new class extends Migration
             $table->integer('business_id')->unsigned();
             $table->foreign('business_id')->references('id')->on('business')->onDelete('cascade');
             $table->string('name', 256);
+            $table->string('business_category', 256);
+            $table->string('egs_serial_number', 256);
             $table->text('landmark')->nullable();
             $table->string('country', 100);
             $table->string('state', 100);

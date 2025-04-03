@@ -32,13 +32,13 @@
                         <!-- Portal Mode -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('portal_mode', 'Portal Mode:') !!}
-                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Choose between Developer (Testing) or Production portal"></i>
+                                {!! Form::label('portal_mode', __('zatca.portal_mode') . ':') !!}
+                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="@lang('zatca.portal_mode_help')"></i>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-globe"></i>
                                     </span>
-                                    {!! Form::select('portal_mode', ['developer' => 'Developer Portal', 'production' => 'Production Portal'], 'developer', ['class' => 'form-control select2', 'style' => 'width: 100%;', 'id' => 'portal_mode', 'placeholder' => 'Select Portal Mode']) !!}
+                                    {!! Form::select('portal_mode', ['developer' => __('zatca.developer_portal'), 'production' => __('zatca.production_portal')], 'developer', ['class' => 'form-control select2', 'style' => 'width: 100%;', 'id' => 'portal_mode', 'placeholder' => __('zatca.select_portal_mode')]); !!}
                                 </div>
                             </div>
                         </div>
@@ -46,13 +46,13 @@
                         <!-- One-Time Password (OTP) -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('otp', 'One-Time Password:') !!}
-                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Enter the OTP you received from ZATCA portal"></i>
+                                {!! Form::label('otp', __('zatca.one_time_password') . ':') !!}
+                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="@lang('zatca.otp_help')"></i>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-key"></i>
                                     </span>
-                                    {!! Form::text('otp', null, ['class' => 'form-control', 'placeholder' => 'Enter OTP', 'id' => 'otp']) !!}
+                                    {!! Form::text('otp', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_otp'), 'id' => 'otp']); !!}
                                 </div>
                             </div>
                         </div>
@@ -60,12 +60,12 @@
                         <!-- Email -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('email', 'Email:') !!}
+                                {!! Form::label('email', __('business.email') . ':') !!}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-envelope"></i>
                                     </span>
-                                    {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => 'Email', 'id' => 'email']) !!}
+                                    {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => __('business.email'), 'id' => 'email']); !!}
                                 </div>
                             </div>
                         </div>
@@ -75,12 +75,12 @@
                         <!-- Common Name -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('common_name', 'Common Name:') !!}
+                                {!! Form::label('common_name', __('zatca.common_name') . ':') !!}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-user"></i>
                                     </span>
-                                    {!! Form::text('common_name', null, ['class' => 'form-control', 'placeholder' => 'Enter Common Name', 'id' => 'common_name']) !!}
+                                    {!! Form::text('common_name', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_common_name'), 'id' => 'common_name']); !!}
                                 </div>
                             </div>
                         </div>
@@ -88,12 +88,12 @@
                         <!-- Country Code -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('country_code', 'Country Code:') !!}
+                                {!! Form::label('country_code', __('zatca.country_code') . ':') !!}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-flag"></i>
                                     </span>
-                                    {!! Form::text('country_code', null, ['class' => 'form-control', 'placeholder' => 'Enter Country Code', 'id' => 'country_code']) !!}
+                                    {!! Form::text('country_code', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_country_code'), 'id' => 'country_code']); !!}
                                 </div>
                             </div>
                         </div>
@@ -101,13 +101,13 @@
                         <!-- Organization Unit Name -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('organization_unit_name', 'Organization Unit Name:') !!}
-                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Enter your department or division name"></i>
+                                {!! Form::label('organization_unit_name', __('zatca.organization_unit_name') . ':') !!}
+                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="@lang('zatca.organization_unit_name_help')"></i>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-building"></i>
                                     </span>
-                                    {!! Form::text('organization_unit_name', null, ['class' => 'form-control', 'placeholder' => 'Enter Organization Unit Name', 'id' => 'organization_unit_name']) !!}
+                                    {!! Form::text('organization_unit_name', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_organization_unit_name'), 'id' => 'organization_unit_name']); !!}
                                 </div>
                             </div>
                         </div>
@@ -117,12 +117,12 @@
                         <!-- Organization Name -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('organization_name', 'Organization Name:') !!}
+                                {!! Form::label('organization_name', __('zatca.organization_name') . ':') !!}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-building-o"></i>
                                     </span>
-                                    {!! Form::text('organization_name', null, ['class' => 'form-control', 'placeholder' => 'Enter Organization Name', 'id' => 'organization_name']) !!}
+                                    {!! Form::text('organization_name', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_organization_name'), 'id' => 'organization_name']); !!}
                                 </div>
                             </div>
                         </div>
@@ -130,13 +130,13 @@
                         <!-- EGS Serial Number -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('egs_serial_number', 'EGS Serial Number:') !!}
-                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Enter the electronic generating system serial number"></i>
+                                {!! Form::label('egs_serial_number', __('zatca.egs_serial_number') . ':') !!}
+                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="@lang('zatca.egs_serial_number_help')"></i>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-barcode"></i>
                                     </span>
-                                    {!! Form::text('egs_serial_number', null, ['class' => 'form-control', 'placeholder' => 'Enter EGS Serial Number', 'id' => 'egs_serial_number']) !!}
+                                    {!! Form::text('egs_serial_number', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_egs_serial_number'), 'id' => 'egs_serial_number']); !!}
                                 </div>
                             </div>
                         </div>
@@ -144,12 +144,12 @@
                         <!-- VAT Name -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('vat_name', 'VAT Name:') !!}
+                                {!! Form::label('vat_name', __('zatca.vat_name') . ':') !!}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-money"></i>
                                     </span>
-                                    {!! Form::text('vat_name', null, ['class' => 'form-control', 'placeholder' => 'Enter VAT Name', 'id' => 'vat_name']) !!}
+                                    {!! Form::text('vat_name', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_vat_name'), 'id' => 'vat_name']); !!}
                                 </div>
                             </div>
                         </div>
@@ -159,13 +159,13 @@
                         <!-- Invoice Type -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('invoice_type', 'Invoice Type:') !!}
-                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Select the type of invoices to be generated"></i>
+                                {!! Form::label('invoice_type', __('zatca.invoice_type') . ':') !!}
+                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="@lang('zatca.invoice_type_help')"></i>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-file-text"></i>
                                     </span>
-                                    {!! Form::select('invoice_type', ['b2b_b2c' => 'Together B2B & B2C'], 'b2b_b2c', ['class' => 'form-control select2', 'style' => 'width: 100%;', 'id' => 'invoice_type']) !!}
+                                    {!! Form::select('invoice_type', ['b2b_b2c' => __('zatca.together_b2b_b2c')], 'b2b_b2c', ['class' => 'form-control select2', 'style' => 'width: 100%;', 'id' => 'invoice_type']); !!}
                                 </div>
                             </div>
                         </div>
@@ -173,13 +173,13 @@
                         <!-- VAT Registration Number -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('vat_number', 'VAT Number:') !!}
-                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Enter your VAT registration number from ZATCA"></i>
+                                {!! Form::label('vat_number', __('zatca.vat_number') . ':') !!}
+                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="@lang('zatca.vat_number_help')"></i>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-hashtag"></i>
                                     </span>
-                                    {!! Form::text('vat_number', null, ['class' => 'form-control', 'placeholder' => 'Enter VAT Number', 'id' => 'vat_number']) !!}
+                                    {!! Form::text('vat_number', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_vat_number'), 'id' => 'vat_number']); !!}
                                 </div>
                             </div>
                         </div>
@@ -187,13 +187,13 @@
                         <!-- Registered Address -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('registered_address', 'Registered Address:') !!}
-                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Enter your business official registered address"></i>
+                                {!! Form::label('registered_address', __('zatca.registered_address') . ':') !!}
+                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="@lang('zatca.registered_address_help')"></i>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-map-marker"></i>
                                     </span>
-                                    {!! Form::text('registered_address', null, ['class' => 'form-control', 'placeholder' => 'Enter Registered Address', 'id' => 'registered_address']) !!}
+                                    {!! Form::text('registered_address', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_registered_address'), 'id' => 'registered_address']); !!}
                                 </div>
                             </div>
                         </div>
@@ -203,13 +203,13 @@
                         <!-- Business Category -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('business_category', 'Business Category:') !!}
-                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Enter your business category based on official classification"></i>
+                                {!! Form::label('business_category', __('zatca.business_category') . ':') !!}
+                                <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="@lang('zatca.business_category_help')"></i>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-briefcase"></i>
                                     </span>
-                                    {!! Form::text('business_category', null, ['class' => 'form-control', 'placeholder' => 'Enter Business Category', 'id' => 'business_category']) !!}
+                                    {!! Form::text('business_category', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_business_category'), 'id' => 'business_category']); !!}
                                 </div>
                             </div>
                         </div>
@@ -217,12 +217,12 @@
                         <!-- CRN -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('crn', 'CRN:') !!}
+                                {!! Form::label('crn', __('zatca.crn') . ':') !!}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-id-card"></i>
                                     </span>
-                                    {!! Form::text('crn', null, ['class' => 'form-control', 'placeholder' => 'Enter CRN', 'id' => 'crn']) !!}
+                                    {!! Form::text('crn', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_crn'), 'id' => 'crn']); !!}
                                 </div>
                             </div>
                         </div>
@@ -230,12 +230,12 @@
                         <!-- Street Name -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('street_name', 'Street Name:') !!}
+                                {!! Form::label('street_name', __('zatca.street_name') . ':') !!}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-road"></i>
                                     </span>
-                                    {!! Form::text('street_name', null, ['class' => 'form-control', 'placeholder' => 'Enter Street Name', 'id' => 'street_name']) !!}
+                                    {!! Form::text('street_name', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_street_name'), 'id' => 'street_name']); !!}
                                 </div>
                             </div>
                         </div>
@@ -245,12 +245,12 @@
                         <!-- Building Number -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('building_number', 'Building Number:') !!}
+                                {!! Form::label('building_number', __('zatca.building_number') . ':') !!}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-home"></i>
                                     </span>
-                                    {!! Form::text('building_number', null, ['class' => 'form-control', 'placeholder' => 'Enter Building Number', 'id' => 'building_number']) !!}
+                                    {!! Form::text('building_number', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_building_number'), 'id' => 'building_number']); !!}
                                 </div>
                             </div>
                         </div>
@@ -258,12 +258,12 @@
                         <!-- Plot Identification -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('plot_identification', 'Plot Identification:') !!}
+                                {!! Form::label('plot_identification', __('zatca.plot_identification') . ':') !!}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-map"></i>
                                     </span>
-                                    {!! Form::text('plot_identification', null, ['class' => 'form-control', 'placeholder' => 'Enter Plot Identification', 'id' => 'plot_identification']) !!}
+                                    {!! Form::text('plot_identification', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_plot_identification'), 'id' => 'plot_identification']); !!}
                                 </div>
                             </div>
                         </div>
@@ -271,12 +271,12 @@
                         <!-- Sub Division Name -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('sub_division_name', 'Sub Division Name:') !!}
+                                {!! Form::label('sub_division_name', __('zatca.sub_division_name') . ':') !!}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-location-arrow"></i>
                                     </span>
-                                    {!! Form::text('sub_division_name', null, ['class' => 'form-control', 'placeholder' => 'Enter Sub Division Name', 'id' => 'sub_division_name']) !!}
+                                    {!! Form::text('sub_division_name', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_sub_division_name'), 'id' => 'sub_division_name']); !!}
                                 </div>
                             </div>
                         </div>
@@ -286,12 +286,12 @@
                         <!-- City Name -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('city_name', 'City Name:') !!}
+                                {!! Form::label('city_name', __('zatca.city_name') . ':') !!}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-building"></i>
                                     </span>
-                                    {!! Form::text('city_name', null, ['class' => 'form-control', 'placeholder' => 'Enter City Name', 'id' => 'city_name']) !!}
+                                    {!! Form::text('city_name', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_city_name'), 'id' => 'city_name']); !!}
                                 </div>
                             </div>
                         </div>
@@ -299,12 +299,12 @@
                         <!-- Postal Number -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('postal_number', 'Postal Number:') !!}
+                                {!! Form::label('postal_number', __('zatca.postal_number') . ':') !!}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-envelope-o"></i>
                                     </span>
-                                    {!! Form::text('postal_number', null, ['class' => 'form-control', 'placeholder' => 'Enter Postal Number', 'id' => 'postal_number']) !!}
+                                    {!! Form::text('postal_number', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_postal_number'), 'id' => 'postal_number']); !!}
                                 </div>
                             </div>
                         </div>
@@ -312,12 +312,12 @@
                         <!-- Country Name -->
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('country_name', 'Country Name:') !!}
+                                {!! Form::label('country_name', __('zatca.country_name') . ':') !!}
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-globe"></i>
                                     </span>
-                                    {!! Form::text('country_name', null, ['class' => 'form-control', 'placeholder' => 'Enter Country Name', 'id' => 'country_name']) !!}
+                                    {!! Form::text('country_name', null, ['class' => 'form-control', 'placeholder' => __('zatca.enter_country_name'), 'id' => 'country_name']); !!}
                                 </div>
                             </div>
                         </div>

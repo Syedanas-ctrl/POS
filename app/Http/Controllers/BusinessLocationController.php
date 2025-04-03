@@ -12,6 +12,9 @@ use App\Utils\Util;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Yajra\DataTables\Facades\DataTables;
+use App\Services\Zatca\Zatca;
+use App\Business;
+use Illuminate\Support\Facades\DB;
 
 class BusinessLocationController extends Controller
 {
@@ -19,16 +22,19 @@ class BusinessLocationController extends Controller
 
     protected $commonUtil;
 
+    protected $zatca;
+
     /**
      * Constructor
      *
      * @param  ModuleUtil  $moduleUtil
      * @return void
      */
-    public function __construct(ModuleUtil $moduleUtil, Util $commonUtil)
+    public function __construct(ModuleUtil $moduleUtil, Util $commonUtil, Zatca $zatca)
     {
         $this->moduleUtil = $moduleUtil;
         $this->commonUtil = $commonUtil;
+        $this->zatca = $zatca;
     }
 
     /**
@@ -85,6 +91,7 @@ class BusinessLocationController extends Controller
                     <a href="{{route(\'location.settings\', [$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-accent"><i class="fa fa-wrench"></i> @lang("messages.settings")</a>
 
                     <button type="button" data-href="{{action(\'App\Http\Controllers\BusinessLocationController@activateDeactivateLocation\', [$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline   activate-deactivate-location @if($is_active) tw-dw-btn-error @else tw-dw-btn-accent @endif tw-w-max"><i class="fa fa-power-off"></i> @if($is_active) @lang("lang_v1.deactivate_location") @else @lang("lang_v1.activate_location") @endif </button>
+                    <button type="button" data-href="{{action(\'App\Http\Controllers\BusinessLocationController@editZatcaConfig\', [$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary btn-modal" data-container=".location_edit_modal"><i class="glyphicon glyphicon-edit"></i> Zatca config</button>
                     '
                 )
                 ->removeColumn('id')
@@ -255,6 +262,133 @@ class BusinessLocationController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function editZatcaConfig($id)
+    {
+        if (! auth()->user()->can('business_settings.access')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = request()->session()->get('user.business_id');
+        $location = BusinessLocation::where('business_id', $business_id)
+                                    ->find($id);
+        $invoice_layouts = InvoiceLayout::where('business_id', $business_id)
+                            ->get()
+                            ->pluck('name', 'id');
+        $invoice_schemes = InvoiceScheme::where('business_id', $business_id)
+                            ->get()
+                            ->pluck('name', 'id');
+
+        $price_groups = SellingPriceGroup::forDropdown($business_id);
+
+        $payment_types = $this->commonUtil->payment_types(null, false, $business_id);
+
+        //Accounts
+        $accounts = [];
+        if ($this->commonUtil->isModuleEnabled('account')) {
+            $accounts = Account::forDropdown($business_id, true, false);
+        }
+        $featured_products = $location->getFeaturedProducts(true, false);
+
+        return view('business_location.zatca')
+                ->with(compact(
+                    'location',
+                ));
+    }
+
+    public function updateZatcaConfig(Request $request, $id)
+    {
+        if (! auth()->user()->can('business_settings.access')) {
+            abort(403, 'Unauthorized action.');
+        }
+        try {
+            $input = $request->only(['otp', 'portal_mode' ]);
+
+            $business_id = $request->session()->get('user.business_id');
+            $location = BusinessLocation::where('business_id', $business_id)
+                                    ->find($id);
+            if (!$location) {
+                throw new \Exception('Location not found');
+            }
+            $business = Business::where('id', $business_id)
+                                    ->first();
+            if (!$business) {
+                throw new \Exception('Business not found');
+            }
+            // $data = [
+            //    "portal_mode" => $input['portal_mode'],
+            //    "otp" => $input['otp'],
+            //    "common_name" => $business->name,
+            //    "country_code" => "SA",
+            //    "organization_unit_name" => $location->name,
+            //    "organization_name" => $business->name,
+            //    "egs_serial_number" => $location->egs_serial_number,
+            //    "vat_number" => $business->tax_number_1,
+            //    "business_category" => $location->business_category,
+            //    "crn" => $business->tax_number_2,
+            //    "address" => $location->getLocationAddressAttribute(),
+            // ];
+
+            $data = [
+                "portal_mode" => "developer",
+                "otp" => "123456",
+                "common_name" => "POS System",
+                "country_code" => "SA",
+                "organization_unit_name" => "POS System",
+                "organization_name" => "POS System",
+                "egs_serial_number" => "1-SDSA|2-FGDS|3-SDFG",
+                "vat_number" => "310216267800003",
+                "business_category" => "Software",
+                "crn" => "CRN123456",
+                "address" => "Mosque, Ha'il, Ha'il, 12345<br>Saudi Arabia"
+            ];
+
+            // Save settings to database
+            $csr = $this->zatca->getCsr($data);
+
+            $csid = $this->zatca->getCSID([
+                'portal_mode' => $input['portal_mode'],
+                'otp' => $input['otp'],
+                'csr' => $csr['certificate']
+            ]);
+            $prodCSID = $this->zatca->getProdCSID([
+                'portal_mode' => $input['portal_mode'],
+                'otp' => $input['otp'],
+                'certificate' => base64_encode($csid['certificate']),
+                'secret' => $csid['secret'],
+                'requestId' => $csid['requestId']
+            ]);
+
+            DB::table('zatca_certificates')->insert([
+                'business_location_id' => $location->id,
+                'csr' => $csr['certificate'],
+                'private' => $csr['privateKey'],
+                'csid_certificate' => $csid['certificate'],
+                'csid_secret' => $csid['secret'],
+                'csid_request_id' => $csid['requestId'],
+                'csid_production_certificate' => $prodCSID['certificate'],
+                'csid_production_secret' => $prodCSID['secret'],
+                'csid_production_request_id' => $prodCSID['requestId']
+            ]);
+
+            $output = ['success' => true,
+                'msg' => __('business.business_location_updated_success'),
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            $output = ['success' => false,
+                'msg' => __('messages.something_went_wrong'),
+            ];
+        }
+
+        return $output;
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -270,7 +404,7 @@ class BusinessLocationController extends Controller
         try {
             $input = $request->only(['name', 'landmark', 'city', 'state', 'country',
                 'zip_code', 'invoice_scheme_id',
-                'invoice_layout_id', 'mobile', 'alternate_number', 'email', 'website', 'custom_field1', 'custom_field2', 'custom_field3', 'custom_field4', 'location_id', 'selling_price_group_id', 'default_payment_accounts', 'featured_products', 'sale_invoice_layout_id', 'sale_invoice_scheme_id' ]);
+                'invoice_layout_id', 'mobile', 'alternate_number', 'email', 'website', 'business_category', 'egs_serial_number', 'custom_field1', 'custom_field2', 'custom_field3', 'custom_field4', 'location_id', 'selling_price_group_id', 'default_payment_accounts', 'featured_products', 'sale_invoice_layout_id', 'sale_invoice_scheme_id' ]);
 
             $business_id = $request->session()->get('user.business_id');
 

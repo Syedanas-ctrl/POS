@@ -145,7 +145,7 @@ class TransactionUtil extends Util
             'is_kitchen_order' => ! empty($input['is_kitchen_order']) ? 1 : 0,
 
         ]);
-
+        $transaction->generateZatcaXml();
         return $transaction;
     }
 
@@ -1584,11 +1584,11 @@ class TransactionUtil extends Util
             //Qr code related information.
             $output['show_qr_code'] = ! empty($il->show_qr_code) ? true : false;
 
-            $zatca_qr = ! empty($il->common_settings['zatca_qr']) ? true : false;
+                $zatca_qr = !empty($il->common_settings['zatca_qr']) ? true : false;
 
-            if ($zatca_qr) {
+            if ($zatca_qr && !empty($transaction->zatca_qr_code)) {
                 $total_order_tax = $transaction->tax_amount + $total_line_taxes;
-                $qr_code_text = $this->_zatca_qr_text($business_details->name, $business_details->tax_number_1, $transaction->transaction_date, $transaction->final_total, $total_order_tax);
+                $qr_code_text = $transaction->zatca_qr_code;
             } else {
                 $is_label_enabled = ! empty($il->common_settings['show_qr_code_label']) ? true : false;
                 $qr_code_details = [];
@@ -1924,6 +1924,8 @@ class TransactionUtil extends Util
      */
     protected function _zatca_qr_text($seller, $tax_number, $invoice_date, $invoice_total_amount, $invoice_tax_amount)
     {
+        // return 'ARlNYXhpbXVtIFNwZWVkIFRlY2ggU3VwcGx5Ag8zOTk5OTk5OTk5MDAwMDMDFDIwMjQtMDktMDdUMTc6NDE6MDhaBAQ0LjYwBQQwLjYwBixhL0RHWWdRZmh2SmV5ZlloQnpOSzNGK2UyZXFKKzIxOVo1NHF4eDMzMlRNPQdgTUVZQ0lRREk0R0krQmRubVhnN2dMcmVPMnNEOW9JTkloaTBuTkIxT1FqemV2OHVCd1FJaEFONmJ5ZVR5ZlhER0FuSkZIQTEyWk11bml3TE9qQkFkMkZTRXQwQlh0MWpPCFgwVjAQBgcqhkjOPQIBBgUrgQQACgNCAARJDkcQiSbQPMl/tT+p39L9U8V8NKOimXxVzkfBlMy+CQEADj4p3wSxO18Ds7H58e9uMIBi7t4xyP8HNTrECG9GCUYwRAIgCq//JmGTFKkEpVrGhdwTIze2GpbWpXB+bw2lpLIv4fUCIGykXPQsHDv/KNAiHvZg84JOYtV8AbKfXWYVK5D4Alh0';
+        return 'AQZBbG1vdWQCDzM5OTk5OTk5OTkwMDAwMwMUMjAyNS0wMy0yMlQxMDo0MzowMFoEBzE1MTUuMDAFBDAuMDAGLEdKb21Wd3BRSVJKa2tYamJBMjhkSnBnMk05ZTVheFRaSXAwNVFIT0ZaUlE9B2BNRVVDSUF4UkRocWYrZGdqZTc2MEN4NW1MNSswcVVGcnYxNFBZWXgyRlgxeExCQzlBaUVBZ3JvYUd0R3g2dWIrZDlUTGd6UWgzcXExbXBKamwrcElGME5ua1lrcjhYYz0IWDBWMBAGByqGSM49AgEGBSuBBAAKA0IABK2BmFZuF2JAAavD7Nx1DuifcsYWLZr5gdmULEAwEVbKi+NyEvoiv/gwU1eN/p/pU3Tvsl+n1GflypQmWLIgNyoJSDBGAiEAw4mE1eK1QG5AMA5WYvh74yNIutrOxlhUdsfssJPxHPICIQCe2mSDMFQVqmmkoeEPJvXCKLOMj0t0LPrWtIQpw+0a5g==';
         $string = '';
 
         //$seller = 'Salla';
@@ -5103,7 +5105,6 @@ class TransactionUtil extends Util
 
     /**
      * Function to get ledger details
-     */
     public function getLedgerDetails($contact_id, $start, $end, $format = 'format_1', $location_id = null, $line_details = false)
     {
         $business_id = request()->session()->get('user.business_id');

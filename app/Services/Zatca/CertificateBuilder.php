@@ -208,6 +208,19 @@ EOL;
     }
 
     /**
+     * Get private key as a string.
+     */
+    public function getPrivateKey(): string {
+        if (!$this->privateKey) {
+            throw new CertificateBuilderException('Private key not generated. Call generate() first.');
+        }
+        if (!openssl_pkey_export($this->privateKey, $privateKeyString)) {
+            throw new CertificateBuilderException('Private key export failed: ' . $this->getOpenSslErrors());
+        }
+        return $privateKeyString;
+    }
+
+    /**
      * Save private key to a file.
      */
     public function savePrivateKey(string $path): void {

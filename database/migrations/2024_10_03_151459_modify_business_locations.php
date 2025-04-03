@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -14,7 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        DB::statement("ALTER TABLE transaction_sell_lines_purchase_lines MODIFY COLUMN id BIGINT AUTO_INCREMENT");
+        Schema::table('business_locations', function (Blueprint $table) {
+            $table->string('business_category', 256)->nullable();
+            $table->string('egs_serial_number', 256)->nullable();
+        });
     }
 
     /**
@@ -24,8 +26,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('transaction_sell_lines_purchase_lines', function (Blueprint $table) {
-            //
+        Schema::table('business_locations', function (Blueprint $table) {
+            $table->dropColumn('business_category');
+            $table->dropColumn('egs_serial_number');
         });
     }
 };

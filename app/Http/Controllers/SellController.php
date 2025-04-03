@@ -28,6 +28,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Spatie\Activitylog\Models\Activity;
 use Yajra\DataTables\Facades\DataTables;
+use App\Services\Zatca\Zatca;
+use App\ZatcaCertificate;
 
 class SellController extends Controller
 {
@@ -42,19 +44,22 @@ class SellController extends Controller
 
     protected $productUtil;
 
+    protected $zatca;
+
     /**
      * Constructor
      *
      * @param  ProductUtils  $product
      * @return void
      */
-    public function __construct(ContactUtil $contactUtil, BusinessUtil $businessUtil, TransactionUtil $transactionUtil, ModuleUtil $moduleUtil, ProductUtil $productUtil)
+    public function __construct(ContactUtil $contactUtil, BusinessUtil $businessUtil, TransactionUtil $transactionUtil, ModuleUtil $moduleUtil, ProductUtil $productUtil, Zatca $zatca)
     {
         $this->contactUtil = $contactUtil;
         $this->businessUtil = $businessUtil;
         $this->transactionUtil = $transactionUtil;
         $this->moduleUtil = $moduleUtil;
         $this->productUtil = $productUtil;
+        $this->zatca = $zatca;
 
         $this->dummyPaymentLine = ['method' => '', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
             'is_return' => 0, 'transaction_no' => '', ];
@@ -754,7 +759,12 @@ class SellController extends Controller
         $users = config('constants.enable_contact_assign') ? User::forDropdown($business_id, false, false, false, true) : [];
 
         $change_return = $this->dummyPaymentLine;
-
+        $zatca_certificate = ZatcaCertificate::where('business_location_id', $default_location->id)->first();
+        if ($zatca_certificate) {
+            $certificate = $zatca_certificate->csid_certificate;
+            $secret = $zatca_certificate->csid_secret;
+            $privateKey = $zatca_certificate->private;
+        }
         return view('sell.create')
             ->with(compact(
                 'business_details',
@@ -870,6 +880,17 @@ class SellController extends Controller
         }
         $status_color_in_activity = Transaction::sales_order_statuses();
         $sales_orders = $sell->salesOrders();
+
+        $sell->generateZatcaXml();
+        // $invoice = $this->zatca->generateInvoiceXml($sell);
+        // $xml = $invoice['xml'];
+        // // TODO: Get certificate, secret, privateKey from DB
+        // $certificate = 'MIICJzCCAcygAwIBAgIGAZW8yMMDMAoGCCqGSM49BAMCMBUxEzARBgNVBAMMCmVJbnZvaWNpbmcwHhcNMjUwMzIyMDczNzAzWhcNMzAwMzIxMjEwMDAwWjBDMQ4wDAYDVQQDDAVUU1RDTzERMA8GA1UECgwIVFNUQ08tU0ExETAPBgNVBAsMCFRTVENPLVNBMQswCQYDVQQGEwJTQTBWMBAGByqGSM49AgEGBSuBBAAKA0IABK2BmFZuF2JAAavD7Nx1DuifcsYWLZr5gdmULEAwEVbKi+NyEvoiv/gwU1eN/p/pU3Tvsl+n1GflypQmWLIgNyqjgdwwgdkwDAYDVR0TAQH/BAIwADCByAYDVR0RBIHAMIG9pIG6MIG3MSgwJgYDVQQEDB8xLVBPU3wyLUExfDMtMS1TRFNBMi1GR0RTMy1TREZHMR8wHQYKCZImiZPyLGQBAQwPMzAwMDAwMDAwMDAwMDAzMQ0wCwYDVQQMDAQxMTAwMUEwPwYDVQQaDDhNYWluIFN0cmVldCAxMjMgUGxvdDU2NyBab25lIEEgUml5YWRoIDExNTY0IFNhdWRpIEFyYWJpYTEYMBYGA1UEDwwPVHJhbnNwb3J0YXRpb25zMAoGCCqGSM49BAMCA0kAMEYCIQDDiYTV4rVAbkAwDlZi+HvjI0i62s7GWFR2x+ywk/Ec8gIhAJ7aZIMwVBWqaaSh4Q8m9cIos4yPS3Qs+ta0hCnD7Rrm';
+        // $secret = 'l+/DhNrjW5Cxc6SKrLtGgRnoQQONXMnLI9qoZUV6Ojs=';
+        // $privateKeyEncoded = 'LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR0VBZ0VBTUJBR0J5cUdTTTQ5QWdFR0JTdUJCQUFLQkcwd2F3SUJBUVFnUG15ZUVQOUp5UVBua2dWTFB6WFgKN3RLbCtDeDV2TzRDcW9SMzErNGorbk9oUkFOQ0FBUWN6dkFPQWxBZG5BdGdPclBsZGkwUiszWEx2SXZRcU9waQpSTlZnUFNaZkVsTS9ieW1oTldub1krbmczRzhFYVVwUUdEOW95aWY0ZEhFZjF1SHhzcDVxCi0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0=';
+        // $privateKey = base64_decode($privateKeyEncoded);
+
+        // $signedInvoice = $this->zatca->getInvoiceSigned($xml, $certificate, $secret, $privateKey);
 
         return view('sale_pos.show')
             ->with(compact(
