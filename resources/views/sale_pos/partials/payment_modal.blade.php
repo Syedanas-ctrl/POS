@@ -17,32 +17,6 @@
                     </div>
                     <div class="col-md-9">
                         <div class="row">
-                            <div id="payment_rows_div">
-                                @php
-                                    $pos_settings = !empty(session()->get('business.pos_settings')) ? json_decode(session()->get('business.pos_settings'), true) : [];
-                                    $show_in_pos = '';
-                                    if ($pos_settings['enable_cash_denomination_on'] == 'all_screens' || $pos_settings['enable_cash_denomination_on'] == 'pos_screen') {
-                                        $show_in_pos = true;
-                                    }
-                                @endphp
-                                @foreach ($payment_lines as $payment_line)
-                                    @if ($payment_line['is_return'] == 1)
-                                        @php
-                                            $change_return = $payment_line;
-                                        @endphp
-
-                                        @continue
-                                    @endif
-
-                                    @include('sale_pos.partials.payment_row', [
-                                        'removable' => !$loop->first,
-                                        'row_index' => $loop->index,
-                                        'payment_line' => $payment_line,
-                                        'show_denomination' => true,
-                                        'show_in_pos' => $show_in_pos,
-                                    ])
-                                @endforeach
-                            </div>
                             <input type="hidden" id="payment_row_index" value="{{ count($payment_lines) }}">
                         </div>
                         <div class="row">
