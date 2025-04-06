@@ -465,7 +465,7 @@ class Transaction extends Model
             //     'invoiceHash' => $signedInvoice['hash'],
             //     'uuid' => $result['uuid']
             // ]);
-            // dd($report);
+            // dd('report', $report);
             
             // Store the results
             $this->zatca_xml = $signedInvoice['xml'];

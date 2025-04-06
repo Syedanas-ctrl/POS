@@ -318,6 +318,7 @@ class ZatcaAPI
 
             // استخدام عنوان URL المبني على البيئة الحالية
             $url = $this->getBaseUri() . $endpoint;
+
             $response = $this->httpClient->request($method, $url, $options);
             $statusCode = $response->getStatusCode();
 
@@ -331,6 +332,7 @@ class ZatcaAPI
 
             return $this->parseResponse($response);
         } catch (GuzzleException $e) {
+            dd($e);
             throw new ZatcaApiException('HTTP request failed', [
                 'message'  => $e->getMessage(),
                 'endpoint' => $endpoint,

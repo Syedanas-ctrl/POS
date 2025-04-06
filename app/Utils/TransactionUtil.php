@@ -145,7 +145,6 @@ class TransactionUtil extends Util
             'is_kitchen_order' => ! empty($input['is_kitchen_order']) ? 1 : 0,
 
         ]);
-        $transaction->generateZatcaXml();
         return $transaction;
     }
 
@@ -1584,8 +1583,7 @@ class TransactionUtil extends Util
             //Qr code related information.
             $output['show_qr_code'] = ! empty($il->show_qr_code) ? true : false;
 
-                $zatca_qr = !empty($il->common_settings['zatca_qr']) ? true : false;
-
+            $zatca_qr = !empty($il->common_settings['zatca_qr']) ? true : false;
             if ($zatca_qr && !empty($transaction->zatca_qr_code)) {
                 $total_order_tax = $transaction->tax_amount + $total_line_taxes;
                 $qr_code_text = $transaction->zatca_qr_code;
@@ -5076,6 +5074,13 @@ class TransactionUtil extends Util
                     'transactions.custom_field_2',
                     'transactions.custom_field_3',
                     'transactions.custom_field_4',
+                    'transactions.zatca_xml',
+                    'transactions.zatca_qr_code',
+                    'transactions.zatca_uuid',
+                    'transactions.zatca_hash',
+                    'transactions.zatca_status',
+                    'transactions.zatca_error',
+                    'transactions.zatca_warning',
                     DB::raw('DATE_FORMAT(transactions.transaction_date, "%Y/%m/%d") as sale_date'),
                     DB::raw("CONCAT(COALESCE(u.surname, ''),' ',COALESCE(u.first_name, ''),' ',COALESCE(u.last_name,'')) as added_by"),
                     DB::raw('(SELECT SUM(IF(TP.is_return = 1,-1*TP.amount,TP.amount)) FROM transaction_payments AS TP WHERE

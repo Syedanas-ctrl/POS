@@ -880,7 +880,7 @@ class SellController extends Controller
         }
         $status_color_in_activity = Transaction::sales_order_statuses();
         $sales_orders = $sell->salesOrders();
-
+        
         $sell->generateZatcaXml();
         // $invoice = $this->zatca->generateInvoiceXml($sell);
         // $xml = $invoice['xml'];

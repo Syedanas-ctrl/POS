@@ -165,4 +165,10 @@ class BusinessLocation extends Model
 
         return $address;
     }
+
+    public function getLocationForZatca(){
+        $location = $this;
+        $address = $location->registered_address . ', ' . $location->street . ', ' . $location->building_number . ', ' . $location->plot_number . ', ' . $location->sub_division_name . ', ' . $location->zip_code . ', ' . $location->city . ', ' . $location->country;
+        return $address;
+    }
 }

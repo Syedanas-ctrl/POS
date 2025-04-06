@@ -20,10 +20,10 @@ class CreateZatcaCertificatesTable extends Migration
             $table->text('csr')->nullable();//csr
             $table->text('private')->nullable();//csr private pem
             $table->text('csid_certificate')->nullable();//csid certificate
-            $table->string('csid_secret', 255)->nullable();//csid secret
+            $table->text('csid_secret')->nullable();//csid secret
             $table->string('csid_request_id', 255)->nullable();//csid request id
-            $table->string('csid_production_certificate', 255)->nullable();//csid production certificate
-            $table->string('csid_production_secret', 255)->nullable();//csid production secret
+            $table->text('csid_production_certificate')->nullable();//csid production certificate
+            $table->text('csid_production_secret')->nullable();//csid production secret
             $table->string('csid_production_request_id', 255)->nullable();//csid production request id
             $table->timestamp('issued_at')->nullable();
             $table->timestamp('expires_at')->nullable();

@@ -97,10 +97,6 @@ Route::middleware(['setData'])->group(function () {
         ->name('confirm_payment');
 });
 
-//TODO: Move this 
-// Route::get('/zatca/onboarding', [App\Http\Controllers\ZatcaController::class, 'index'])->name('zatca.index');
-Route::post('/zatca/save-integration', [App\Http\Controllers\ZatcaController::class, 'saveIntegration'])->name('zatca.save-integration');
-
 //Routes for authenticated users only
 Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 'AdminSidebarMenu', 'CheckUserLogin'])->group(function () {
     Route::get('pos/payment/{id}', [SellPosController::class, 'edit'])->name('edit-pos-payment');
@@ -313,6 +309,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
 
     Route::get('/zatca/onboarding', [App\Http\Controllers\ZatcaController::class, 'index'])->name('zatca.index');
+    Route::get('/zatca/dashboard', [App\Http\Controllers\ZatcaController::class, 'dashboard'])->name('zatca.dashboard');
+    Route::get('/zatca/sells', [App\Http\Controllers\ZatcaController::class, 'sells'])->name('zatca.sells');
+    Route::put('/zatca/save-onboarding/{id}', [App\Http\Controllers\ZatcaController::class, 'saveIntegration']);
 
     //Business Locations...
     Route::post('business-location/check-location-id', [BusinessLocationController::class, 'checkLocationId']);

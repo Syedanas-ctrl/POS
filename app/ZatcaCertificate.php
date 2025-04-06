@@ -35,5 +35,14 @@ class ZatcaCertificate extends Model
             ->whereNotNull('csid_secret')
             ->latest()
             ->first();
+        // if($certificate){
+        //     $certificate->csr = base64_decode($certificate->csr);
+        //     $certificate->private = base64_decode($certificate->private);
+        //     $certificate->csid_certificate = base64_decode($certificate->csid_certificate);
+        //     $certificate->csid_secret = base64_decode($certificate->csid_secret);
+        //     $certificate->csid_production_certificate = base64_decode($certificate->csid_production_certificate);
+        //     $certificate->csid_production_secret = base64_decode($certificate->csid_production_secret);
+        // }
+        // return $certificate;
     }
 }

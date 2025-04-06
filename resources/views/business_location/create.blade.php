@@ -81,6 +81,18 @@
                         {!! Form::text('website', null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.website')]); !!}
                     </div>
                 </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        {!! Form::label('business_category', __( 'lang_v1.business_category' ) . ':') !!}
+                        {!! Form::text('business_category', null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.business_category')]); !!}
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        {!! Form::label('egs_serial_number', __( 'lang_v1.egs_serial_number' ) . ':') !!}
+                        {!! Form::text('egs_serial_number', null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.egs_serial_number')]); !!}
+                    </div>
+                </div>
                 <div class="clearfix"></div>
                 <div class="col-sm-6">
                     <div class="form-group">
@@ -118,18 +130,6 @@
                         {!! Form::label('selling_price_group_id', __('lang_v1.default_selling_price_group') . ':') !!} @show_tooltip(__('lang_v1.location_price_group_help'))
                         {!! Form::select('selling_price_group_id', $price_groups, null, ['class' => 'form-control',
                         'placeholder' => __('messages.please_select')]); !!}
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        {!! Form::label('business_category', __( 'lang_v1.business_category' ) . ':') !!}
-                        {!! Form::text('business_category', $location->business_category, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.business_category')]); !!}
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        {!! Form::label('egs_serial_number', __( 'lang_v1.egs_serial_number' ) . ':') !!}
-                        {!! Form::text('egs_serial_number', $location->egs_serial_number, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.egs_serial_number')]); !!}
                     </div>
                 </div>
                 <div class="clearfix"></div>

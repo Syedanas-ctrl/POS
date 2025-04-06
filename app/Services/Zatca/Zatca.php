@@ -40,7 +40,6 @@ class Zatca
     public function getCsr(array $data) : array
     {
         try {
-            $address  =  $data['address'];
             $csr = (new CertificateBuilder())
                 // The Organization Identifier must be 15 digits, starting andending with 3
                 ->setOrganizationIdentifier($data['vat_number'])
@@ -52,7 +51,7 @@ class Zatca
                 ->setCountryName($data['country_code'])                          // The Country name must be Two chars only
                 ->setOrganizationName($data['organization_name'])    // The name of your organization
                 ->setOrganizationalUnitName($data['organization_unit_name'])    // Organizational unit
-                ->setAddress($address)            // Address
+                ->setAddress($data['address'])            // Address
                 // # Four digits, each digit acting as a bool. The order is as follows: Standard Invoice, Simplified, future use, future use 
                 ->setInvoiceType(1100)
                 ->setProduction($data['portal_mode'] == 'production')                          // true = Production |  false = Testing
@@ -554,9 +553,10 @@ class Zatca
 
         // Supplier Address
         $addressSupplier = (new Address())
-            ->setStreetName($location->landmark . ' ' . $location->custom_field1 . ' ' . $location->custom_field2 . ' ' . $location->custom_field3 . ' ' . $location->custom_field4)
-            // ->setBuildingNumber($location->custom_field1 ?? '1234') // Assuming custom_field1 stores building number
-            // ->setCitySubdivisionName($location->custom_field2) // Assuming custom_field2 stores district
+            ->setPlotIdentification($location->plot_number)
+            ->setStreetName($location->street)
+            ->setBuildingNumber($location->building_number) // Assuming custom_field1 stores building number
+            ->setCitySubdivisionName($location->sub_division_name) // Assuming custom_field2 stores district
             ->setCityName($location->city)
             ->setPostalZone($location->zip_code)
             ->setCountry($location->country);
@@ -573,7 +573,7 @@ class Zatca
         // Build complete supplier party
         $supplierParty = (new Party())
             ->setPartyIdentification($business->tax_number_2) // Commercial registration number
-            ->setPartyIdentificationId("CRN")
+            ->setPartyIdentificationId($business->tax_label_2)
             ->setLegalEntity($legalEntitySupplier)
             ->setPartyTaxScheme($partyTaxSchemeSupplier)
             ->setPostalAddress($addressSupplier);
