@@ -312,7 +312,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/zatca/dashboard', [App\Http\Controllers\ZatcaController::class, 'dashboard'])->name('zatca.dashboard');
     Route::get('/zatca/sells', [App\Http\Controllers\ZatcaController::class, 'sells'])->name('zatca.sells');
     Route::put('/zatca/save-onboarding/{id}', [App\Http\Controllers\ZatcaController::class, 'saveIntegration']);
-
+    Route::get('/zatca/sync/{transaction_id}', [App\Http\Controllers\ZatcaController::class, 'sync'])->name('zatca.sync');
     //Business Locations...
     Route::post('business-location/check-location-id', [BusinessLocationController::class, 'checkLocationId']);
     Route::resource('business-location', BusinessLocationController::class);

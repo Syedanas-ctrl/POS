@@ -112,6 +112,7 @@
                     <thead>
                         <tr>
                             <th>@lang('messages.action')</th>
+                            <th>Zatca Action</th>
                             <th>@lang('messages.date')</th>
                             <th>@lang('sale.invoice_no')</th>
                             <th>@lang('sale.customer_name')</th>
@@ -242,6 +243,12 @@
                 columns: [{
                         data: 'action',
                         name: 'action',
+                        orderable: false,
+                        "searchable": false
+                    },
+                    {
+                        data: 'zatca_action',
+                        name: 'zatca_action',
                         orderable: false,
                         "searchable": false
                     },

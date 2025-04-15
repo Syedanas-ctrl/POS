@@ -469,6 +469,29 @@ class SellController extends Controller
                         return $html;
                     }
                 )
+                ->addColumn(
+                    'zatca_action',
+                    function ($row) use ($only_shipments, $is_admin, $sale_type) {
+                        $html = '<div class="btn-group">
+                                    <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info tw-w-max dropdown-toggle" 
+                                        data-toggle="dropdown" aria-expanded="false">'.
+                                        __('messages.actions').
+                                        '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                        </span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-left" role="menu">';
+
+                        if ($row->zatca_status != 'REPORTED' && $row->type == 'sell') {
+                            $html .= '<li><a href="#" data-href="'.route('zatca.sync', [$row->id]).'" target="_blank" class="btn-modal" data-container=".view_modal"><i class="fas fa-sync" aria-hidden="true"></i> Sync invoice</a></li>';
+                        }
+                        if ($row->zatca_status == 'REPORTED') {
+                            $html .= '<li><a href="#" class="btn-modal" data-container=".view_modal"><i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Download Xml</a></li>';
+                        }
+                        $html .= '</ul></div>'; 
+
+                        return $html;
+                    }
+                )
                 ->removeColumn('id')
                 ->editColumn(
                     'final_total',
@@ -603,7 +626,7 @@ class SellController extends Controller
                         }
                     }, ]);
 
-            $rawColumns = ['final_total', 'action', 'total_paid', 'total_remaining', 'payment_status', 'invoice_no', 'discount_amount', 'tax_amount', 'total_before_tax', 'shipping_status', 'types_of_service_name', 'payment_methods', 'return_due', 'conatct_name', 'status'];
+            $rawColumns = ['final_total', 'action', 'zatca_action', 'total_paid', 'total_remaining', 'payment_status', 'invoice_no', 'discount_amount', 'tax_amount', 'total_before_tax', 'shipping_status', 'types_of_service_name', 'payment_methods', 'return_due', 'conatct_name', 'status'];
 
             return $datatable->rawColumns($rawColumns)
                       ->make(true);

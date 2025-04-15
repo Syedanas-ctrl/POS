@@ -179,6 +179,30 @@ class ZatcaController extends Controller
         return redirect()->back()->with(['status' => $output]);
     }
 
+    public function sync($id)
+    {
+
+        $sell = Transaction::find($id);
+        $certificate = \App\ZatcaCertificate::getActiveCertificate($sell->location_id);
+        // Report the invoice
+        $report = $this->zatca->report([
+            'portal_mode' => 'sandbox',
+            'certificate' => base64_encode($certificate->csid_production_certificate),
+            'secret' => $certificate->csid_production_secret,
+            'signedXmlInvoice' => $sell->zatca_xml,
+            'invoiceHash' => $sell->zatca_hash,
+            'uuid' => $sell->zatca_uuid
+        ]);
+
+        if ($report['status'] == 'success') {
+            $sell->zatca_status = 'REPORTED';
+            $sell->save();
+            return redirect()->back()->with(['status' => ['success' => true, 'msg' => __('messages.synced_successfully')]]);
+        } else {
+            return redirect()->back()->with(['status' => ['success' => false, 'msg' => __('messages.something_went_wrong')]]);
+        }
+    }
+
     /**
      * Display the ZATCA dashboard
      *
@@ -778,7 +802,7 @@ class ZatcaController extends Controller
         // invoices sync status
         $totalInvoices = Transaction::where('business_id', $business_id)->count();
         $totalUnsynced = Transaction::where('business_id', $business_id)
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->whereNull('zatca_status')
                     ->orWhere('zatca_status', '!=', 'REPORTED');
             })

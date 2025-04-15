@@ -332,7 +332,6 @@ class ZatcaAPI
 
             return $this->parseResponse($response);
         } catch (GuzzleException $e) {
-            dd($e);
             throw new ZatcaApiException('HTTP request failed', [
                 'message'  => $e->getMessage(),
                 'endpoint' => $endpoint,
