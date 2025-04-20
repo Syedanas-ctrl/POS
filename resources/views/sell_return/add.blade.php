@@ -13,7 +13,7 @@
 
 	{!! Form::hidden('location_id', $sell->location->id, ['id' => 'location_id', 'data-receipt_printer_type' => $sell->location->receipt_printer_type ]); !!}
 
-	{!! Form::open(['url' => action([\App\Http\Controllers\SellReturnController::class, 'store']), 'method' => 'post', 'id' => 'sell_return_form' ]) !!}
+	{!! Form::open(['url' => action([\App\Http\Controllers\SellReturnController::class, 'store']), 'method' => 'post', 'id' => 'sell_return_form', 'files' => true ]) !!}
 	{!! Form::hidden('transaction_id', $sell->id); !!}
 	<div class="box box-solid">
 		<div class="box-header">
@@ -140,9 +140,16 @@
 			$tax_percent = $sell->tax->amount;
 			}
 			@endphp
+			@component('components.widget', ['class' => 'box-solid', 'id' => "payment_rows_div", 'title' => __('purchase.add_payment')])
+			<div class="payment_row">
+				@include('transaction_payment.payment_return_row', ['row_index' => 0, 'show_date' => true, 'transaction' => $sell, 'payment_line' => $payment_line, 'payment_types' => $payment_types ])
+			</div>
+			<input type="hidden" name="amount" id="payment_amount" value="0">
+			@endcomponent
 			{!! Form::hidden('tax_id', $sell->tax_id); !!}
 			{!! Form::hidden('tax_amount', 0, ['id' => 'tax_amount']); !!}
 			{!! Form::hidden('tax_percent', $tax_percent, ['id' => 'tax_percent']); !!}
+			{!! Form::hidden('for_payment_form', 1, ['id' => 'for_payment_form']); !!}
 			<div class="row">
 				<div class="col-sm-12 text-right">
 					<strong>@lang('lang_v1.total_return_discount'):</strong>
@@ -212,6 +219,9 @@
 		$('span#total_return_discount').text(__currency_trans_from_en(discount, true));
 		$('span#total_return_tax').text(__currency_trans_from_en(total_tax, true));
 		$('span#net_return').text(__currency_trans_from_en(net_return_inc_tax, true));
+		
+		// Update payment amount input
+		$('#payment_amount').val(net_return_inc_tax);
 	}
 </script>
 @endsection

@@ -17,6 +17,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
 use Yajra\DataTables\Facades\DataTables;
+use App\TransactionPayment;
+use App\Events\TransactionPaymentAdded;
+use App\Exceptions\AdvanceBalanceNotAvailable;
 
 class SellReturnController extends Controller
 {
@@ -46,6 +49,8 @@ class SellReturnController extends Controller
         $this->contactUtil = $contactUtil;
         $this->businessUtil = $businessUtil;
         $this->moduleUtil = $moduleUtil;
+        $this->dummyPaymentLine = ['method' => 'cash', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
+            'is_return' => 0, 'transaction_no' => '', ];
     }
 
     /**
@@ -253,8 +258,12 @@ class SellReturnController extends Controller
             $sell->sell_lines[$key]->formatted_qty = $this->transactionUtil->num_f($value->quantity, false, null, true);
         }
 
+        $payment_line = new TransactionPayment();
+        $payment_line->method = 'cash';
+        $accounts = $this->moduleUtil->accountsDropdown($business_id, true, false, true);
+        $payment_types = $this->transactionUtil->payment_types(null, false, $business_id);
         return view('sell_return.add')
-            ->with(compact('sell'));
+            ->with(compact('sell', 'payment_line', 'payment_types', 'accounts'));
     }
 
     /**
@@ -287,6 +296,78 @@ class SellReturnController extends Controller
                 $sell_return = $this->transactionUtil->addSellReturn($input, $business_id, $user_id);
 
                 $receipt = $this->receiptContent($business_id, $sell_return->location_id, $sell_return->id);
+
+
+                // Add payment for sell return
+                $transaction_before = $sell_return->replicate();
+
+                if (! (auth()->user()->can('purchase.payments') || auth()->user()->can('hms.add_booking_payment') || auth()->user()->can('sell.payments') || auth()->user()->can('all_expense.access') || auth()->user()->can('view_own_expense'))) {
+                    abort(403, 'Unauthorized action.');
+                }
+
+                if ($sell_return->payment_status != 'paid') {
+
+                    $inputs = $request->only(['amount', 'method', 'note', 'card_number', 'card_holder_name',
+                        'card_transaction_number', 'card_type', 'card_month', 'card_year', 'card_security',
+                        'cheque_number', 'bank_account_number', ]);
+
+                    $inputs['paid_on'] = $this->transactionUtil->uf_date($request->input('transaction_date'), true);
+                    $inputs['transaction_id'] = $sell_return->id;
+                    $inputs['amount'] = $this->transactionUtil->num_uf($inputs['amount']);
+                    $inputs['created_by'] = auth()->user()->id;
+                    $inputs['payment_for'] = $sell_return->contact_id;
+
+                    if ($inputs['method'] == 'custom_pay_1') {
+                        $inputs['transaction_no'] = $request->input('transaction_no_1');
+                    } elseif ($inputs['method'] == 'custom_pay_2') {
+                        $inputs['transaction_no'] = $request->input('transaction_no_2');
+                    } elseif ($inputs['method'] == 'custom_pay_3') {
+                        $inputs['transaction_no'] = $request->input('transaction_no_3');
+                    }
+
+                    if (! empty($request->input('account_id')) && $inputs['method'] != 'advance') {
+                        $inputs['account_id'] = $request->input('account_id');
+                    }
+
+                    $prefix_type = 'purchase_payment';
+                    if (in_array($sell_return->type, ['sell', 'sell_return'])) {
+                        $prefix_type = 'sell_payment';
+                    } elseif (in_array($sell_return->type, ['expense', 'expense_refund'])) {
+                        $prefix_type = 'expense_payment';
+                    }
+
+
+                    $ref_count = $this->transactionUtil->setAndGetReferenceCount($prefix_type);
+                    //Generate reference number
+                    $inputs['payment_ref_no'] = $this->transactionUtil->generateReferenceNumber($prefix_type, $ref_count);
+
+                    $inputs['business_id'] = $request->session()->get('business.id');
+                    $inputs['document'] = $this->transactionUtil->uploadFile($request, 'document', 'documents');
+
+                    //Pay from advance balance
+                    $payment_amount = $inputs['amount'];
+                    $contact_balance = ! empty($sell_return->contact) ? $sell_return->contact->balance : 0;
+                    if ($inputs['method'] == 'advance' && $inputs['amount'] > $contact_balance) {
+                        throw new AdvanceBalanceNotAvailable(__('lang_v1.required_advance_balance_not_available'));
+                    }
+
+                    if (! empty($inputs['amount'])) {
+                        $tp = TransactionPayment::create($inputs);
+
+                        if (! empty($request->input('denominations'))) {
+                            $this->transactionUtil->addCashDenominations($tp, $request->input('denominations'));
+                        }
+
+                        $inputs['transaction_type'] = $sell_return->type;
+                        event(new TransactionPaymentAdded($tp, $inputs));
+                    }
+
+                    //update payment status
+                    $payment_status = $this->transactionUtil->updatePaymentStatus($sell_return->id, $sell_return->final_total);
+                    $sell_return->payment_status = $payment_status;
+
+                    $this->transactionUtil->activityLog($sell_return, 'payment_edited', $transaction_before);
+                }
 
                 DB::commit();
 
