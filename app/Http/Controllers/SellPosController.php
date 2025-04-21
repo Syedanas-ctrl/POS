@@ -2302,16 +2302,6 @@ class SellPosController extends Controller
                             $link_class = !empty($row->recur_stopped_on) ? 'btn-success' : 'btn-danger';
 
                             $html .= '<a href="' . action([\App\Http\Controllers\SellPosController::class, 'toggleRecurringInvoices'], [$row->id]) . '" class="toggle_recurring_invoice btn btn-xs ' . $link_class . '"><i class="fa fa-power-off"></i> ' . $link_text . '</a>';
-
-                            if ($row->is_direct_sale == 0) {
-                                $html .= '<a target="_blank" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary" href="' . action([\App\Http\Controllers\SellPosController::class, 'edit'], [$row->id]) . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
-                            } else {
-                                $html .= '<a target="_blank" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary" href="' . action([\App\Http\Controllers\SellController::class, 'edit'], [$row->id]) . '"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>';
-                            }
-
-                            if (auth()->user()->can('direct_sell.delete') || auth()->user()->can('sell.delete')) {
-                                $html .= '&nbsp;<a href="' . action([\App\Http\Controllers\SellPosController::class, 'destroy'], [$row->id]) . '" class="delete-sale tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error"><i class="fas fa-trash"></i> ' . __('messages.delete') . '</a>';
-                            }
                         }
 
                         return $html;
