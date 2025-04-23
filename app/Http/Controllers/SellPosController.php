@@ -486,16 +486,7 @@ class SellPosController extends Controller
                 $input['document'] = $this->transactionUtil->uploadFile($request, 'sell_document', 'documents');
 
                 $transaction = $this->transactionUtil->createSellTransaction($business_id, $input, $invoice_total, $user_id);
-
-                // $invoice = $this->zatca->generateInvoiceXml($transaction);
-                // $xml = $invoice['xml'];
-
-                // $zatcaCertificate = ZatcaCertificate::where('business_location_id', $input['location_id'])->first();
-                // $certificate = $zatcaCertificate->csid_certificate;
-                // $secret = $zatcaCertificate->csid_secret;
-                // $privateKey = $zatcaCertificate->private;
-                // $signedInvoice = $this->zatca->getInvoiceSigned($xml, $certificate, $secret, $privateKey);
-                // dd($signedInvoice);
+                $transaction->generateZatcaXml();
 
                 //Upload Shipping documents
                 Media::uploadMedia($business_id, $transaction, $request, 'shipping_documents', false, 'shipping_document');
