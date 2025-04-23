@@ -1587,7 +1587,7 @@ class TransactionUtil extends Util
             if ($zatca_qr && !empty($transaction->zatca_qr_code)) {
                 $total_order_tax = $transaction->tax_amount + $total_line_taxes;
                 $qr_code_text = $transaction->zatca_qr_code;
-            } else {
+            } else if (false) { // Voluntarily disable QR code generation other than ZATCA QR code
                 $is_label_enabled = ! empty($il->common_settings['show_qr_code_label']) ? true : false;
                 $qr_code_details = [];
                 $qr_code_fields = ! empty($il->qr_code_fields) ? $il->qr_code_fields : [];
@@ -1635,7 +1635,7 @@ class TransactionUtil extends Util
             }
 
             if ($transaction->status == 'final') {
-                $output['qr_code_text'] = $qr_code_text;
+                $output['qr_code_text'] = $qr_code_text ?? '';
             }
         }
         //Module related information.

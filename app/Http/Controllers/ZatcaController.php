@@ -605,6 +605,29 @@ class ZatcaController extends Controller
                         return $html;
                     }
                 )
+                ->addColumn(
+                    'zatca_action',
+                    function ($row) use ($only_shipments, $is_admin, $sale_type) {
+                        $html = '<div class="btn-group">
+                                    <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info tw-w-max dropdown-toggle" 
+                                        data-toggle="dropdown" aria-expanded="false">'.
+                                        __('messages.actions').
+                                        '<span class="caret"></span><span class="sr-only">Toggle Dropdown
+                                        </span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-left" role="menu">';
+
+                        if ($row->zatca_status != 'REPORTED' && $row->type == 'sell') {
+                            $html .= '<li><a href="#" data-href="'.route('zatca.sync', [$row->id]).'" target="_blank" class="btn-modal" data-container=".view_modal"><i class="fas fa-sync" aria-hidden="true"></i> Sync invoice</a></li>';
+                        }
+                        if ($row->zatca_status == 'REPORTED') {
+                            $html .= '<li><a href="#" class="btn-modal" data-container=".view_modal"><i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Download Xml</a></li>';
+                        }
+                        $html .= '</ul></div>'; 
+
+                        return $html;
+                    }
+                )
                 ->removeColumn('id')
                 ->editColumn(
                     'final_total',
@@ -740,9 +763,34 @@ class ZatcaController extends Controller
                     },
                 ]);
 
-            $rawColumns = ['final_total', 'action', 'total_paid', 'total_remaining', 'payment_status', 'invoice_no', 'discount_amount', 'tax_amount', 'total_before_tax', 'shipping_status', 'types_of_service_name', 'payment_methods', 'return_due', 'conatct_name', 'status', 'zatca_status'];
-
+            $rawColumns = ['final_total', 'action', 'zatca_action', 'total_paid', 'total_remaining', 'payment_status', 'invoice_no', 'discount_amount', 'tax_amount', 'total_before_tax', 'shipping_status', 'types_of_service_name', 'payment_methods', 'return_due', 'conatct_name', 'status'];
+            
+            // Create a base query for counts - we need to remove groupBy to get accurate counts
+            $baseCountQuery = clone $sells;
+            $baseCountQuery->getQuery()->groups = null;
+            
+            // Get total invoices count from the base query
+            $total_invoices = $baseCountQuery->count();
+            
+            // Clone the base query again for different counts to avoid stacking conditions
+            $syncedCountQuery = clone $baseCountQuery;
+            $unsyncedCountQuery = clone $baseCountQuery;
+            
+            // Get synced invoices count
+            $synced_invoices = $syncedCountQuery->where('transactions.zatca_status', 'REPORTED')->count();
+            
+            // Get unsynced invoices count
+            $unsynced_invoices = $unsyncedCountQuery->where(function($query) {
+                $query->whereNull('transactions.zatca_status')
+                    ->orWhere('transactions.zatca_status', '!=', 'REPORTED');
+            })->count();
+            
             return $datatable->rawColumns($rawColumns)
+                ->with([
+                    'total_invoices' => $total_invoices, 
+                    'synced_invoices' => $synced_invoices, 
+                    'unsynced_invoices' => $unsynced_invoices
+                ])
                 ->make(true);
         }
         $business_locations = BusinessLocation::forDropdown($business_id, false);
@@ -771,17 +819,7 @@ class ZatcaController extends Controller
 
         $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
 
-        // invoices sync status
-        $totalInvoices = Transaction::where('business_id', $business_id)->count();
-        $totalUnsynced = Transaction::where('business_id', $business_id)
-            ->where(function ($query) {
-                $query->whereNull('zatca_status')
-                    ->orWhere('zatca_status', '!=', 'REPORTED');
-            })
-            ->count();
-        $totalSynced = Transaction::where('business_id', $business_id)->where('zatca_status', '=', 'REPORTED')->count();
-
         return view('zatca.sells')
-            ->with(compact('business_locations', 'customers', 'is_woocommerce', 'sales_representative', 'is_cmsn_agent_enabled', 'commission_agents', 'service_staffs', 'is_tables_enabled', 'is_service_staff_enabled', 'is_types_service_enabled', 'shipping_statuses', 'sources', 'payment_types', 'totalInvoices', 'totalUnsynced', 'totalSynced'));
+            ->with(compact('business_locations', 'customers', 'is_woocommerce', 'sales_representative', 'is_cmsn_agent_enabled', 'commission_agents', 'service_staffs', 'is_tables_enabled', 'is_service_staff_enabled', 'is_types_service_enabled', 'shipping_statuses', 'sources', 'payment_types'));
     }
 }

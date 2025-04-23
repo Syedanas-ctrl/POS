@@ -20,7 +20,7 @@
                     </span>
                     <div class="info-box-content">
                         <span class="info-box-text">Total Invoices</span>
-                        <span class="info-box-number total-invoices">{{ $totalInvoices }}</span>
+                        <span class="info-box-number total-invoices">{{ $totalInvoices ?? 0 }}</span>
                     </div>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                     </span>
                     <div class="info-box-content">
                         <span class="info-box-text">Total Un-synced</span>
-                        <span class="info-box-number total-unsynced">{{ $totalUnsynced }}</span>
+                        <span class="info-box-number total-unsynced">{{ $totalUnsynced ?? 0 }}</span>
                     </div>
                 </div>
             </div>
@@ -46,7 +46,7 @@
                     </span>
                     <div class="info-box-content">
                         <span class="info-box-text">Total Synced</span>
-                        <span class="info-box-number total-synced">{{ $totalSynced }}</span>
+                        <span class="info-box-number total-synced">{{ $totalSynced ?? 0 }}</span>
                     </div>
                 </div>
             </div>
@@ -199,8 +199,9 @@
                     [1, 'desc']
                 ],
                 "ajax": {
-                    "url": "/sells",
+                    "url": "/zatca/sells",
                     "data": function(d) {
+                        console.log('ajax', d);
                         if ($('#sell_list_filter_date_range').val()) {
                             var start = $('#sell_list_filter_date_range').data('daterangepicker')
                                 .startDate.format('YYYY-MM-DD');
@@ -235,6 +236,28 @@
                         }
 
                         d = __datatable_ajax_callback(d);
+                    },
+                    "dataSrc": function(json) {
+                        console.log('dataSrc', json);
+                        // Display total records count
+                        if (json.recordsTotal) {
+                            $('.total-records-count').text(json.recordsTotal);
+                        }
+                        
+                        // Update the dashboard counts
+                        if (json.total_invoices !== undefined) {
+                            $('.total-invoices').text(json.total_invoices);
+                        }
+                        
+                        if (json.unsynced_invoices !== undefined) {
+                            $('.total-unsynced').text(json.unsynced_invoices);
+                        }
+                        
+                        if (json.synced_invoices !== undefined) {
+                            $('.total-synced').text(json.synced_invoices);
+                        }
+                        
+                        return json.data;
                     }
                 },
                 scrollY: "75vh",
@@ -402,8 +425,6 @@
                     var footer_total_paid = 0;
                     var footer_total_remaining = 0;
                     var footer_total_sell_return_due = 0;
-                    var total_invoices = 0;
-                    var total_synced = 0;
                     for (var r in data) {
                         footer_sale_total += $(data[r].final_total).data('orig-value') ? parseFloat($(
                             data[r].final_total).data('orig-value')) : 0;
@@ -414,8 +435,6 @@
                         footer_total_sell_return_due += $(data[r].return_due).find('.sell_return_due')
                             .data('orig-value') ? parseFloat($(data[r].return_due).find(
                                 '.sell_return_due').data('orig-value')) : 0;
-                        total_invoices += $(data[r].total_paid).data('orig-value') ? 1 : 0;
-                        total_synced += $(data[r].total_paid).data('orig-value') && data[r].zatca_status === 'REPORTED' ? 1 : 0;
                     }
 
                     $('.footer_total_sell_return_due').html(__currency_trans_from_en(
@@ -427,10 +446,6 @@
                     $('.footer_payment_status_count').html(__count_status(data, 'payment_status'));
                     $('.service_type_count').html(__count_status(data, 'types_of_service_name'));
                     $('.payment_method_count').html(__count_status(data, 'payment_methods'));
-
-                    $('.total-invoices').html(total_invoices);
-                    $('.total-unsynced').html(total_invoices - total_synced);
-                    $('.total-synced').html(total_synced);
                 },
                 createdRow: function(row, data, dataIndex) {
                     $(row).find('td:eq(6)').attr('class', 'clickable_td');
