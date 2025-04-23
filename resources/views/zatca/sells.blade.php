@@ -239,12 +239,8 @@
                     },
                     "dataSrc": function(json) {
                         console.log('dataSrc', json);
-                        // Display total records count
-                        if (json.recordsTotal) {
-                            $('.total-records-count').text(json.recordsTotal);
-                        }
                         
-                        // Update the dashboard counts
+                        // Update the dashboard counts with server-provided counts
                         if (json.total_invoices !== undefined) {
                             $('.total-invoices').text(json.total_invoices);
                         }

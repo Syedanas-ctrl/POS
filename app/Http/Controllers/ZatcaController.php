@@ -765,28 +765,38 @@ class ZatcaController extends Controller
 
             $rawColumns = ['final_total', 'action', 'zatca_action', 'total_paid', 'total_remaining', 'payment_status', 'invoice_no', 'discount_amount', 'tax_amount', 'total_before_tax', 'shipping_status', 'types_of_service_name', 'payment_methods', 'return_due', 'conatct_name', 'status'];
             
-            // Create a base query for counts - we need to remove groupBy to get accurate counts
-            $baseCountQuery = clone $sells;
-            $baseCountQuery->getQuery()->groups = null;
+            // Process datatable with raw columns
+            $datatable = $datatable->rawColumns($rawColumns);
             
-            // Get total invoices count from the base query
-            $total_invoices = $baseCountQuery->count();
+            // Create a base query for counts that matches what datatable displays
+            // We need to ensure the count logic matches exactly what datatable is displaying
+            $baseCountQuery = clone $sells;
+            
+            // The groupBy ensures we're counting distinct transactions only
+            // This is important because the joins might create duplicate rows
+            if (!$baseCountQuery->getQuery()->groups) {
+                $baseCountQuery->groupBy('transactions.id');
+            }
+            
+            // Get total invoices count with groupBy to match datatable display
+            $total_invoices = $baseCountQuery->get()->count();
             
             // Clone the base query again for different counts to avoid stacking conditions
             $syncedCountQuery = clone $baseCountQuery;
             $unsyncedCountQuery = clone $baseCountQuery;
             
             // Get synced invoices count
-            $synced_invoices = $syncedCountQuery->where('transactions.zatca_status', 'REPORTED')->count();
+            $synced_invoices = $syncedCountQuery->where('transactions.zatca_status', 'REPORTED')->get()->count();
             
             // Get unsynced invoices count
             $unsynced_invoices = $unsyncedCountQuery->where(function($query) {
                 $query->whereNull('transactions.zatca_status')
                     ->orWhere('transactions.zatca_status', '!=', 'REPORTED');
-            })->count();
+            })->get()->count();
             
-            return $datatable->rawColumns($rawColumns)
+            return $datatable
                 ->with([
+                    'recordsTotal' => $total_invoices, 
                     'total_invoices' => $total_invoices, 
                     'synced_invoices' => $synced_invoices, 
                     'unsynced_invoices' => $unsynced_invoices

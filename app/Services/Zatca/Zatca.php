@@ -426,6 +426,7 @@ class Zatca
                     'xml' => $xml
                 ];
         } catch (\Exception $e) {
+            dd($e);
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
             throw new ZatcaException("Failed to sign ZATCA XML: " . $e->getMessage(), 0, $e);
         }
@@ -742,6 +743,7 @@ class Zatca
                 'uuid' => $uuid
             ];
         } catch (\Exception $e) {
+            dd($e);
             throw new ZatcaException("Failed to generate ZATCA XML: " . $e->getMessage(), 0, $e);
         }
     }
