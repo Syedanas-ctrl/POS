@@ -597,7 +597,7 @@ class Zatca
         //     ->setCompanyId($customer->tax_number);
 
         // Build complete customer party
-        // $customerParty = (new Party())
+        $customerParty = (new Party());
         //     ->setLegalEntity($legalEntityCustomer)
         //     // ->setPartyTaxScheme($partyTaxSchemeCustomer)
         //     ->setPostalAddress($addressCustomer);
@@ -723,7 +723,7 @@ class Zatca
             ->setTaxCurrencyCode($currency->code)
             ->setAdditionalDocumentReferences($additionalDocs)
             ->setAccountingSupplierParty($supplierParty)
-            // ->setAccountingCustomerParty($customerParty)
+            ->setAccountingCustomerParty($customerParty)
             ->setPaymentMeans($paymentMeans)
             ->setAllowanceCharges($allowanceCharges)
             ->setTaxTotal($taxTotal)
