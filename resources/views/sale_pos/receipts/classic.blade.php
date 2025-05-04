@@ -1,5 +1,8 @@
 <!-- business information here -->
 
+@php $copies = 2; @endphp
+@for ($i = 0; $i < $copies; $i++)
+<div class="ticket">
 <div class="row" style="color: #000000 !important;">
 		<!-- Logo -->
 		@if(empty($receipt_details->letter_head))
@@ -653,9 +656,13 @@
 			@endif
 		</div>
 	@endif
-	<div class="col-xs-12">
-		@if(!empty($receipt_details->is_kitchen_order) && !empty($receipt_details->lines))
-            @include('sale_pos.receipts.partial.kitchen_order_section', ['receipt_details' => $receipt_details])
-        @endif
-	</div>
 </div>
+@if ($i < $copies - 1)
+		<div style="page-break-after: always;"></div>
+	@endif
+</div>
+@endfor
+@if(!empty($receipt_details->is_kitchen_order) && !empty($receipt_details->lines))
+	<div style="page-break-before: always;"></div>
+	@include('sale_pos.receipts.partial.kitchen_order_section', ['receipt_details' => $receipt_details])
+@endif

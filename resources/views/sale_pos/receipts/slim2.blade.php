@@ -9,6 +9,8 @@
         <title>Receipt-{{$receipt_details->invoice_no}}</title>
     </head>
     <body>
+	@php $copies = 2; @endphp
+	@for ($i = 0; $i < $copies; $i++)
         <div class="ticket">
 			@if(empty($receipt_details->letter_head))
 				@if(!empty($receipt_details->logo))
@@ -683,8 +685,14 @@
 				</p>
 			@endif
         </div>
+
+		@if ($i < $copies - 1)
+			<div style="page-break-after: always;"></div>
+		@endif
+	@endfor
 		<div>
 			@if(!empty($receipt_details->is_kitchen_order) && !empty($receipt_details->lines))
+				<div style="page-break-before: always;"></div>
 				@include('sale_pos.receipts.partial.kitchen_order_section', ['receipt_details' => $receipt_details])
 			@endif
 		</div>
