@@ -12,6 +12,8 @@
 	@php $copies = 2; @endphp
 	@for ($i = 0; $i < $copies; $i++)
         <div class="ticket">
+		{{-- hide and show few things based on the copy number(company and customer copy) --}}
+		@if($i == 0)
 			@if(empty($receipt_details->letter_head))
 				@if(!empty($receipt_details->logo))
 					<div class="text-box centered">
@@ -83,6 +85,19 @@
 						<img style="width: 100%;margin-bottom: 10px;" src="{{$receipt_details->letter_head}}">
 					</div>
 				@endif
+		@endif
+		@if ($i == 1)
+			<div class="text-center">
+				<p class="centered">
+					<h4>
+						Company Copy
+					</h4>
+				</p>
+			</div>
+		@endif
+			@if(app()->getLocale() == 'ar')
+				<div class="rtl-invoice-header">
+			@endif
 			<div class="border-top textbox-info">
 				<p class="f-left"><strong>{!! $receipt_details->invoice_no_prefix !!}</strong></p>
 				<p class="f-right">
@@ -670,12 +685,12 @@
             @endif
 
             {{-- Barcode --}}
-			@if($receipt_details->show_barcode)
+			@if($receipt_details->show_barcode && $i == 0)
 				<br/>
 				<img class="center-block" src="data:image/png;base64,{{DNS1D::getBarcodePNG($receipt_details->invoice_no, 'C128', 2,30,array(39, 48, 54), true)}}">
 			@endif
 
-			@if($receipt_details->show_qr_code && !empty($receipt_details->qr_code_text))
+			@if($receipt_details->show_qr_code && !empty($receipt_details->qr_code_text) && $i == 0)
 				<img class="center-block mt-5" src="data:image/png;base64,{{DNS2D::getBarcodePNG($receipt_details->qr_code_text, 'QRCODE')}}">
 			@endif
 
@@ -845,5 +860,15 @@ img {
 }
 .bb-lg {
 	border-bottom: 1px solid lightgray;
+}
+.rtl-invoice-header {
+	direction: rtl;
+	text-align: right;
+}
+.rtl-invoice-header .f-left {
+	float: right !important;
+}
+.rtl-invoice-header .f-right {
+	float: left !important;
 }
 </style>

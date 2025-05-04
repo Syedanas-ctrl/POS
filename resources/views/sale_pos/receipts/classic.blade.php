@@ -4,6 +4,8 @@
 @for ($i = 0; $i < $copies; $i++)
 <div class="ticket">
 <div class="row" style="color: #000000 !important;">
+		{{-- hide and show few things based on the copy number(company and customer copy) --}}
+		@if($i == 0)
 		<!-- Logo -->
 		@if(empty($receipt_details->letter_head))
 			@if(!empty($receipt_details->logo))
@@ -87,6 +89,19 @@
 				<img style="width: 100%;margin-bottom: 10px;" src="{{$receipt_details->letter_head}}">
 			</div>
 		@endif
+		@endif
+		@if ($i == 1)
+		<div class="text-center">
+			<p class="centered">
+				<h2>
+					Company Copy
+				</h2>
+			</p>
+		</div>
+	@endif
+	@if(app()->getLocale() == 'ar')
+	<div class="rtl-invoice-header-classic">
+	@endif
 	<div class="col-xs-12 text-center">
 		<!-- Invoice  number, Date  -->
 		<p style="width: 100% !important" class="word-wrap">
@@ -268,6 +283,9 @@
 			</span>
 		</p>
 	</div>
+	@if(app()->getLocale() == 'ar')
+	</div>
+	@endif
 </div>
 
 <div class="row" style="color: #000000 !important;">
@@ -644,7 +662,7 @@
 		{!! $receipt_details->footer_text !!}
 	</div>
 	@endif
-	@if($receipt_details->show_barcode || $receipt_details->show_qr_code)
+	@if(($receipt_details->show_barcode || $receipt_details->show_qr_code) && $i == 0)
 		<div class="@if(!empty($receipt_details->footer_text)) col-xs-4 @else col-xs-12 @endif text-center">
 			@if($receipt_details->show_barcode)
 				{{-- Barcode --}}
@@ -666,3 +684,15 @@
 	<div style="page-break-before: always;"></div>
 	@include('sale_pos.receipts.partial.kitchen_order_section', ['receipt_details' => $receipt_details])
 @endif
+<style type="text/css">
+.rtl-invoice-header-classic {
+	direction: rtl;
+	text-align: right;
+}
+.rtl-invoice-header-classic .pull-left {
+	float: right !important;
+}
+.rtl-invoice-header-classic .pull-right {
+	float: left !important;
+}
+</style>
