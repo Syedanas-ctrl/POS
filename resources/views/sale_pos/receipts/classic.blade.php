@@ -653,4 +653,9 @@
 			@endif
 		</div>
 	@endif
+	<div class="col-xs-12">
+		@if(!empty($receipt_details->is_kitchen_order) && !empty($receipt_details->lines))
+            @include('sale_pos.receipts.partial.kitchen_order_section', ['receipt_details' => $receipt_details])
+        @endif
+	</div>
 </div>

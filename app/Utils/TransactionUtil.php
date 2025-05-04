@@ -1910,6 +1910,8 @@ class TransactionUtil extends Util
         $output['design'] = $il->design;
         $output['table_tax_headings'] = ! empty($il->table_tax_headings) ? array_filter(json_decode($il->table_tax_headings), 'strlen') : null;
 
+        $output['is_kitchen_order'] = $transaction->is_kitchen_order ?? 0;
+
         return (object) $output;
     }
 

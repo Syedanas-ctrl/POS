@@ -717,6 +717,11 @@
         </div>
         <!-- <button id="btnPrint" class="hidden-print">Print</button>
         <script src="script.js"></script> -->
+		<div>
+			@if(!empty($receipt_details->is_kitchen_order) && !empty($receipt_details->lines))
+				@include('sale_pos.receipts.partial.kitchen_order_section', ['receipt_details' => $receipt_details])
+			@endif
+		</div>
     </body>
 </html>
 
