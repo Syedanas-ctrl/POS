@@ -84,7 +84,7 @@
 			<div class="border-top textbox-info">
 				<p class="f-left"><strong>{!! $receipt_details->invoice_no_prefix !!}</strong></p>
 				<p class="f-right">
-					{{$receipt_details->invoice_no}}
+					{{$receipt_details->invoice_no}}1
 				</p>
 			</div>
 			<div class="textbox-info">
