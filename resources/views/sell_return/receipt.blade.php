@@ -13,7 +13,7 @@
 					{!! $receipt_details->invoice_no_prefix !!}
 				@endif
 
-				{{$receipt_details->invoice_no}}11
+				{{$receipt_details->invoice_no}}
 			</p>
 
 			</td>
@@ -99,7 +99,7 @@
 				<span class="pull-left">{!! $receipt_details->invoice_no_prefix !!}</span>
 			@endif
 
-			{{$receipt_details->invoice_no}}12
+			{{$receipt_details->invoice_no}}
 		</p>
 
 		<p class="text-right">

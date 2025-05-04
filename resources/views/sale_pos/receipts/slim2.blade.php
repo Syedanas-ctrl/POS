@@ -13,7 +13,7 @@
 			@if(empty($receipt_details->letter_head))
 				@if(!empty($receipt_details->logo))
 					<div class="text-box centered">
-						<img style="max-height: 100px; width: auto;" src="{{$receipt_details->logo}}" alt="Logo">
+						<img style="max-height: 100px; width: auto;" class="img img-responsive center-block" src="{{$receipt_details->logo}}" alt="Logo">
 					</div>
 				@endif
 				<div class="text-box">
@@ -84,7 +84,7 @@
 			<div class="border-top textbox-info">
 				<p class="f-left"><strong>{!! $receipt_details->invoice_no_prefix !!}</strong></p>
 				<p class="f-right">
-					{{$receipt_details->invoice_no}}1
+					{{$receipt_details->invoice_no}}
 				</p>
 			</div>
 			<div class="textbox-info">

@@ -64,7 +64,7 @@
 				<span class="pull-left">{!! $receipt_details->invoice_no_prefix !!}</span>
 			@endif
 
-			{{$receipt_details->invoice_no}}5
+			{{$receipt_details->invoice_no}}
 		</p>
 		<!-- Date-->
 		@if(!empty($receipt_details->date_label))

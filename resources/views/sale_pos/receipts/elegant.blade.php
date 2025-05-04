@@ -8,7 +8,7 @@
 							{!! $receipt_details->invoice_no_prefix !!}
 						@endif
 
-						{{$receipt_details->invoice_no}}7
+						{{$receipt_details->invoice_no}}
 					</small>
 				</p>
 			</td>
@@ -56,7 +56,7 @@
 				<span class="pull-left">{!! $receipt_details->invoice_no_prefix !!}</span>
 			@endif
 
-			{{$receipt_details->invoice_no}}8
+			{{$receipt_details->invoice_no}}
 		</div>
 
 		<!-- Total Due-->

@@ -80,7 +80,7 @@
 				{!! $receipt_details->invoice_no_prefix !!}
 			@endif
 
-			{{$receipt_details->invoice_no}}6
+			{{$receipt_details->invoice_no}}
 
 			@if(!empty($receipt_details->date_label))
 				, {{$receipt_details->date_label}}

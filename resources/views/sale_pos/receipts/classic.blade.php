@@ -91,7 +91,7 @@
 				@if(!empty($receipt_details->invoice_no_prefix))
 					<b>{!! $receipt_details->invoice_no_prefix !!}</b>
 				@endif
-				{{$receipt_details->invoice_no}}2
+				{{$receipt_details->invoice_no}}
 
 				@if(!empty($receipt_details->types_of_service))
 					<br/>
