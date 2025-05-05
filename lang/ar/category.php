@@ -1,17 +1,17 @@
 <?php
 
- return [
-     'categories' => 'الأصناف',
-     'manage_your_categories' => 'إدارة الأصناف الخاصة بك',
-     'all_your_categories' => 'كل أصنافك',
-     'category' => 'الصنف',
-     'category_name' => 'إسم الصنف',
-     'code' => 'رمز الصنف',
-     'add_as_sub_category' => 'إضافة إلى الصنف الفرعي',
-     'select_parent_category' => 'حدد الصنف الرئيسي',
-     'added_success' => 'تمت إضافة الصنف بنجاح',
-     'updated_success' => 'تم تحديث الصنف بنجاح',
-     'deleted_success' => 'تم حذف الصنف بنجاح',
-     'add_category' => 'إضافة صنف',
-     'edit_category' => 'تعديل صنف',
- ];
+return [
+    'categories' => 'الفئات',
+    'manage_your_categories' => 'إدارة الفئات',
+    'all_your_categories' => 'جميع الفئات',
+    'category' => 'الفئة',
+    'category_name' => 'اسم الفئة',
+    'code' => 'كود الفئة',
+    'add_as_sub_category' => 'إضافة كفئة فرعية',
+    'select_parent_category' => 'اختر الفئة الرئيسية',
+    'added_success' => 'تم إضافة الفئة بنجاح',
+    'updated_success' => 'تم تحديث الفئة بنجاح',
+    'deleted_success' => 'تم حذف الفئة بنجاح',
+    'add_category' => 'إضافة فئة',
+    'edit_category' => 'تعديل الفئة',
+];

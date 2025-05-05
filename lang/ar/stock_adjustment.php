@@ -1,20 +1,31 @@
 <?php
 
- return [
-     'stock_adjustment' => 'المخزون التالف',
-     'stock_adjustments' => 'المخزون التالف',
-     'list' => 'قائمة المخزون التالف',
-     'add' => 'أضف تالف',
-     'all_stock_adjustments' => 'جميع المخزون التالف',
-     'search_product' => 'البحث عن المنتجات',
-     'adjustment_type' => 'نوع الاتلاف',
-     'normal' => 'عادي',
-     'abnormal' => 'غير عادي',
-     'total_amount' => 'الإجمالي',
-     'total_amount_recovered' => 'الإجمالي المسترد',
-     'reason_for_stock_adjustment' => 'السبب',
-     'stock_adjustment_added_successfully' => 'تمت اضافة مخزون تالف بنجاح',
-     'search_products' => 'البحث عن المنتجات',
-     'delete_success' => 'تم حذف المخزون التالف بنجاح',
-     'view_details' => 'عرض تفاصيل المخزون التالف',
- ];
+return [
+    // العناوين الرئيسية
+    'stock_adjustment' => 'تسوية المخزون',
+    'stock_adjustments' => 'تسويات المخزون',
+    'list' => 'قائمة التسويات',
+    
+    // إجراءات
+    'add' => 'إضافة تسوية',
+    'all_stock_adjustments' => 'جميع تسويات المخزون',
+    'search_product' => 'بحث عن منتج',
+    'search_products' => 'بحث عن منتجات',
+    'view_details' => 'عرض التفاصيل',
+    
+    // أنواع التسويات
+    'adjustment_type' => 'نوع التسوية',
+    'normal' => 'طبيعي',
+    'abnormal' => 'غير طبيعي',
+    
+    // القيم المالية
+    'total_amount' => 'القيمة الإجمالية',
+    'total_amount_recovered' => 'القيمة المستردة',
+    
+    // أسباب التسوية
+    'reason_for_stock_adjustment' => 'سبب التسوية',
+    
+    // رسائل النظام
+    'stock_adjustment_added_successfully' => 'تمت إضافة تسوية المخزون بنجاح',
+    'delete_success' => 'تم حذف التسوية بنجاح',
+];
