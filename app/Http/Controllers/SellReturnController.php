@@ -374,6 +374,7 @@ class SellReturnController extends Controller
                 $output = ['success' => 1,
                     'msg' => __('lang_v1.success'),
                     'receipt' => $receipt,
+                    'redirect_url' => action([\App\Http\Controllers\SellReturnController::class, 'index'])
                 ];
             }
         } catch (\Exception $e) {

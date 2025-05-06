@@ -31,8 +31,11 @@ $(document).ready(function() {
                         if (result.success == 1) {
                             toastr.success(result.msg);
                             //Check if enabled or not
-                            if (result.receipt.is_enabled) {
+                            if (result.receipt?.is_enabled) {
                                 pos_print(result.receipt);
+                            }
+                            if (result.redirect_url) {
+                                window.location.href = result.redirect_url;
                             }
                         } else {
                             toastr.error(result.msg);
