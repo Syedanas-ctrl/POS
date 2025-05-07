@@ -398,6 +398,24 @@ class CashRegisterUtil extends Util
         ];
     }
 
+    public function getSellReturn($user_id, $open_time, $close_time)
+    {
+        $transaction_details = Transaction::where('transactions.created_by', $user_id)
+                ->whereBetween('transactions.created_at', [$open_time, $close_time])
+                ->where('transactions.type', 'sell_return')
+                ->where('transactions.is_direct_sale', 0)
+                ->where('transactions.status', 'final')
+                ->select(
+                    DB::raw('SUM(tax_amount) as total_tax'),
+                    DB::raw('SUM(IF(discount_type = "percentage", total_before_tax*discount_amount/100, discount_amount)) as total_discount'),
+                    DB::raw('SUM(final_total) as total_sales'),
+                    DB::raw('SUM(shipping_charges) as total_shipping_charges')
+                )
+                ->first();
+
+        return $transaction_details;
+    }
+
     /**
      * Retrieves the currently opened cash register for the user
      *

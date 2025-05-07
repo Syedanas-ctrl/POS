@@ -174,6 +174,13 @@
       </tr>
     </table>
     <hr>
+    @if($sell_return->total_sales > 0)
+      <span>
+          Total Sell Return:
+          @format_currency($sell_return->total_sales)
+      </span>
+    @endif
+    <hr>
     <table class="table table-condensed">
       <tr>
         <td>

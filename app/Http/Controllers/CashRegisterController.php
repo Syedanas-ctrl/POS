@@ -119,11 +119,11 @@ class CashRegisterController extends Controller
         $open_time = $register_details['open_time'];
         $close_time = ! empty($register_details['closed_at']) ? $register_details['closed_at'] : \Carbon::now()->toDateTimeString();
         $details = $this->cashRegisterUtil->getRegisterTransactionDetails($user_id, $open_time, $close_time);
-
+        $sell_return = $this->cashRegisterUtil->getSellReturn($user_id, $open_time, $close_time);
         $payment_types = $this->cashRegisterUtil->payment_types(null, false, $business_id);
 
         return view('cash_register.register_details')
-                    ->with(compact('register_details', 'details', 'payment_types', 'close_time'));
+                    ->with(compact('register_details', 'details', 'payment_types', 'close_time', 'sell_return'));
     }
 
     /**
@@ -149,11 +149,11 @@ class CashRegisterController extends Controller
         $is_types_of_service_enabled = $this->moduleUtil->isModuleEnabled('types_of_service');
 
         $details = $this->cashRegisterUtil->getRegisterTransactionDetails($user_id, $open_time, $close_time, $is_types_of_service_enabled);
-
+        $sell_return = $this->cashRegisterUtil->getSellReturn($user_id, $open_time, $close_time);
         $payment_types = $this->cashRegisterUtil->payment_types($register_details->location_id, true, $business_id);
 
         return view('cash_register.register_details')
-                ->with(compact('register_details', 'details', 'payment_types', 'close_time'));
+                ->with(compact('register_details', 'details', 'payment_types', 'close_time', 'sell_return'));
     }
 
     /**
@@ -181,10 +181,12 @@ class CashRegisterController extends Controller
 
         $payment_types = $this->cashRegisterUtil->payment_types($register_details->location_id, true, $business_id);
 
+        $sell_return = $this->cashRegisterUtil->getSellReturn($user_id, $open_time, $close_time);
+
         $pos_settings = ! empty(request()->session()->get('business.pos_settings')) ? json_decode(request()->session()->get('business.pos_settings'), true) : [];
 
         return view('cash_register.close_register_modal')
-                    ->with(compact('register_details', 'details', 'payment_types', 'pos_settings'));
+                    ->with(compact('register_details', 'details', 'payment_types', 'pos_settings', 'sell_return'));
     }
 
     /**
