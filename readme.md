@@ -1,4 +1,4 @@
-# UltimatePOS - Customized Fork
+# POS
 
 This repository is a fork/built on top of other POS system, customized to meet specific client requirements. The primary modifications include:
 
