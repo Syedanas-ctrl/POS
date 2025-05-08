@@ -1,15 +1,60 @@
-## About Ultimate POS
+# UltimatePOS - Customized Fork
 
-Ultimate POS is a POS application by [Ultimate Fosters](http://ultimatefosters.com), a brand of [The Web Fosters](http://thewebfosters.com).
+This repository is a fork/built on top of other POS system, customized to meet specific client requirements. The primary modifications include:
 
-## Installation & Documentation
-You will find installation guide and documentation in the downloaded zip file.
-Also, For complete updated documentation of the ultimate pos please visit online [documentation guide](http://ultimatefosters.com/ultimate-pos/).
+- **ZATCA Integration**: Zatca is government based invoice reporting system
+- Additional client-specific ui customizations and enhancements
+- Extended functionality to address unique business workflows
 
-## Security Vulnerabilities
+## Technology Stack
 
-If you discover a security vulnerability within ultimate POS, please send an e-mail to support at thewebfosters@gmail.com. All security vulnerabilities will be promptly addressed.
+This project is built using the following frameworks and technologies:
 
-## License
+- **Laravel**: PHP framework for the backend API and server-side logic
+- **MySQL**: Database management system
+- **Bootstrap**: Frontend CSS framework for responsive design
 
-The Ultimate POS software is licensed under the [Codecanyon license](https://codecanyon.net/licenses/standard).
+## Installation and Setup
+
+### Prerequisites
+- PHP 8.0 or higher
+- Composer
+- MySQL
+- Node.js and NPM
+
+### Installation Steps
+
+1. Install PHP dependencies
+   ```
+   composer install
+   ```
+
+2. Create environment file
+   ```
+   cp .env.example .env
+   ```
+
+3. Configure database settings in the `.env` file
+   ```
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=ultimatepos
+   DB_USERNAME=root
+   DB_PASSWORD=your_password
+   ```
+
+4. Generate application key
+   ```
+   php artisan key:generate
+   ```
+
+5. Run database migrations and seed data
+   ```
+   php artisan migrate --seed
+   ```
+
+6. Start the development server
+   ```
+   php artisan serve
+   ```
