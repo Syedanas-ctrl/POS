@@ -20,6 +20,7 @@ use Yajra\DataTables\Facades\DataTables;
 use App\TransactionPayment;
 use App\Events\TransactionPaymentAdded;
 use App\Exceptions\AdvanceBalanceNotAvailable;
+use App\Utils\CashRegisterUtil;
 
 class SellReturnController extends Controller
 {
@@ -36,19 +37,22 @@ class SellReturnController extends Controller
 
     protected $moduleUtil;
 
+    protected $cashRegisterUtil;
+
     /**
      * Constructor
      *
      * @param  ProductUtils  $product
      * @return void
      */
-    public function __construct(ProductUtil $productUtil, TransactionUtil $transactionUtil, ContactUtil $contactUtil, BusinessUtil $businessUtil, ModuleUtil $moduleUtil)
+    public function __construct(ProductUtil $productUtil, TransactionUtil $transactionUtil, ContactUtil $contactUtil, BusinessUtil $businessUtil, ModuleUtil $moduleUtil, CashRegisterUtil $cashRegisterUtil)
     {
         $this->productUtil = $productUtil;
         $this->transactionUtil = $transactionUtil;
         $this->contactUtil = $contactUtil;
         $this->businessUtil = $businessUtil;
         $this->moduleUtil = $moduleUtil;
+        $this->cashRegisterUtil = $cashRegisterUtil;
         $this->dummyPaymentLine = ['method' => 'cash', 'amount' => 0, 'note' => '', 'card_transaction_number' => '', 'card_number' => '', 'card_type' => '', 'card_holder_name' => '', 'card_month' => '', 'card_year' => '', 'card_security' => '', 'cheque_number' => '', 'bank_account_number' => '',
             'is_return' => 0, 'transaction_no' => '', ];
     }
@@ -153,8 +157,6 @@ class SellReturnController extends Controller
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
                         <li><a href="#" class="btn-modal" data-container=".view_modal" data-href="{{action(\'App\Http\Controllers\SellReturnController@show\', [$parent_sale_id])}}"><i class="fas fa-eye" aria-hidden="true"></i> @lang("messages.view")</a></li>
-                        <li><a href="{{action(\'App\Http\Controllers\SellReturnController@add\', [$parent_sale_id])}}" ><i class="fa fa-edit" aria-hidden="true"></i> @lang("messages.edit")</a></li>
-                        <li><a href="{{action(\'App\Http\Controllers\SellReturnController@destroy\', [$id])}}" class="delete_sell_return" ><i class="fa fa-trash" aria-hidden="true"></i> @lang("messages.delete")</a></li>
                         <li><a href="#" class="print-invoice" data-href="{{action(\'App\Http\Controllers\SellReturnController@printInvoice\', [$id])}}"><i class="fa fa-print" aria-hidden="true"></i> @lang("messages.print")</a></li>
 
                     @if($payment_status != "paid")
@@ -256,6 +258,7 @@ class SellReturnController extends Controller
             }
 
             $sell->sell_lines[$key]->formatted_qty = $this->transactionUtil->num_f($value->quantity, false, null, true);
+            $sell->sell_lines[$key]->quantity_returned = $this->transactionUtil->num_f($value->quantity, false, null, true);
         }
 
         $payment_line = new TransactionPayment();
@@ -365,6 +368,26 @@ class SellReturnController extends Controller
                     //update payment status
                     $payment_status = $this->transactionUtil->updatePaymentStatus($sell_return->id, $sell_return->final_total);
                     $sell_return->payment_status = $payment_status;
+
+                    if (!$sell_return->is_direct_sale) {
+                        $payment_formatted = [
+                            'amount' => $inputs['amount'],
+                            'method' => $inputs['method'],
+                            'is_return' => 1,
+                            'card_transaction_number' => $inputs['card_transaction_number'] ?? null,
+                            'card_number' => $inputs['card_number'] ?? null,
+                            'card_type' => $inputs['card_type'] ?? null,
+                            'card_holder_name' => $inputs['card_holder_name'] ?? null,
+                            'card_month' => $inputs['card_month'] ?? null,
+                            'card_year' => $inputs['card_year'] ?? null,
+                            'card_security' => $inputs['card_security'] ?? null,
+                            'cheque_number' => $inputs['cheque_number'] ?? null,
+                            'bank_account_number' => $inputs['bank_account_number'] ?? null,
+                            'note' => $inputs['note'] ?? null,
+                            'paid_on' => $inputs['paid_on']
+                        ];
+                        $this->cashRegisterUtil->addSellReturnPayments($sell_return, [$payment_formatted]);
+                    }
 
                     $this->transactionUtil->activityLog($sell_return, 'payment_edited', $transaction_before);
                 }

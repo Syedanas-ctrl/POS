@@ -64,6 +64,35 @@ class CashRegisterUtil extends Util
         return true;
     }
 
+    public function addSellReturnPayments($transaction, $payments)
+    {
+        $user_id = auth()->user()->id;
+        $register = CashRegister::where('user_id', $user_id)
+                                ->where('status', 'open')
+                                ->first();
+        $payments_formatted = [];
+        foreach ($payments as $payment) {
+            $payment_amount = $this->num_uf($payment['amount']);
+            if ($payment_amount != 0) {
+                $type = 'debit';
+
+                $payments_formatted[] = new CashRegisterTransaction([
+                    'amount' => $payment_amount,
+                    'pay_method' => $payment['method'],
+                    'type' => $type,
+                    'transaction_type' => 'refund',
+                    'transaction_id' => $transaction->id,
+                ]);
+            }
+        }
+        if (! empty($payments_formatted)) {
+            $register->cash_register_transactions()->saveMany($payments_formatted);
+        }
+
+        return true;
+    }
+
+
     /**
      * Adds sell payments to currently opened cash register
      *
@@ -258,7 +287,7 @@ class CashRegisterUtil extends Util
             'cash_registers.location_id',
             'cash_registers.denominations',
             DB::raw("SUM(IF(transaction_type='initial', amount, 0)) as cash_in_hand"),
-            DB::raw("SUM(IF(transaction_type='sell', amount, IF(transaction_type='refund', -1 * amount, 0))) as total_sale"),
+            DB::raw("SUM(IF(transaction_type='sell', amount, IF(transaction_type='refund' AND transaction_id IN (SELECT id FROM transactions WHERE type='sell'), -1 * amount, 0))) as total_sale"),
             DB::raw("SUM(IF(transaction_type='expense', IF(transaction_type='refund', -1 * amount, amount), 0)) as total_expense"),
             DB::raw("SUM(IF(pay_method='cash', IF(transaction_type='sell', amount, 0), 0)) as total_cash"),
             DB::raw("SUM(IF(pay_method='cash', IF(transaction_type='expense', amount, 0), 0)) as total_cash_expense"),
